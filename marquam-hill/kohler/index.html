@@ -751,6 +751,74 @@
       
       return config;
     }
+    
+    // Determine which modalities have configured stops
+    function getAvailableModalities() {
+      const modalities = {
+        bus: false,
+        max: false,
+        streetcar: false,
+        tram: false
+      };
+      
+      if (BUILDING_CONFIG) {
+        const allStops = [...BUILDING_CONFIG.primary_stops, ...BUILDING_CONFIG.secondary_stops];
+        for (const stop of allStops) {
+          if (stop.type === 'bus') modalities.bus = true;
+          else if (stop.type === 'max') modalities.max = true;
+          else if (stop.type === 'streetcar') modalities.streetcar = true;
+          else if (stop.type === 'tram') modalities.tram = true;
+        }
+      }
+      
+      return modalities;
+    }
+    
+    // Hide panels for modalities without configured stops
+    function hideUnusedModalityPanels() {
+      const available = getAvailableModalities();
+      
+      // Hide panels that don't have stops configured
+      if (!available.bus) {
+        const panel = document.getElementById('panel-bus');
+        if (panel) panel.style.display = 'none';
+      }
+      if (!available.max) {
+        const panel = document.getElementById('panel-max');
+        if (panel) panel.style.display = 'none';
+      }
+      if (!available.streetcar) {
+        const panel = document.getElementById('panel-streetcar');
+        if (panel) panel.style.display = 'none';
+      }
+      if (!available.tram) {
+        const panel = document.getElementById('panel-tram');
+        if (panel) panel.style.display = 'none';
+      }
+      
+      return available;
+    }
+    
+    // Determine which pairs have at least one visible panel
+    function getAvailablePairs(available) {
+      const pairs = [];
+      
+      // Pair 0: Bus + MAX
+      if (available.bus || available.max) {
+        pairs.push(0);
+      }
+      
+      // Pair 1: Tram + Streetcar
+      if (available.tram || available.streetcar) {
+        pairs.push(1);
+      }
+      
+      return pairs;
+    }
+    
+    let availableModalities = { bus: true, max: true, streetcar: true, tram: true };
+    let availablePairs = [0, 1];
+    
     const CONFIG = {
       bus: {
         title: "Bus",
@@ -1389,6 +1457,10 @@
       if (BUILDING_CONFIG) {
         Object.assign(CONFIG, buildConfigFromJSON(BUILDING_CONFIG));
         
+        // Hide panels for unused modalities
+        availableModalities = hideUnusedModalityPanels();
+        availablePairs = getAvailablePairs(availableModalities);
+        
         // Show alert if active
         if (BUILDING_CONFIG.alerts && BUILDING_CONFIG.alerts.active) {
           showAlert(BUILDING_CONFIG.alerts.message);
@@ -1399,14 +1471,18 @@
       updateClock();
       setInterval(updateClock, 1000);
 
-      setVisiblePair(0);
+      setVisiblePair(availablePairs.length > 0 ? availablePairs[0] : 0);
       refreshBoard();
       refreshWeather();
 
       setInterval(() => {
-        // toggle modality pair then refresh data with fresh Solari flip
-        const nextPair = currentPair === 0 ? 1 : 0;
-        setVisiblePair(nextPair);
+        // Only toggle if there are multiple pairs available
+        if (availablePairs.length > 1) {
+          const currentIndex = availablePairs.indexOf(currentPair);
+          const nextIndex = (currentIndex + 1) % availablePairs.length;
+          const nextPair = availablePairs[nextIndex];
+          setVisiblePair(nextPair);
+        }
         refreshBoard();
       }, REFRESH_SECONDS * 1000);
 
