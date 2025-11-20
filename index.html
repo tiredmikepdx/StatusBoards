@@ -206,13 +206,23 @@
     // Define your boards here. "path" is relative to this index.html.
     const BOARDS = [
       {
-        id: "south-waterfront",
-        label: "South Waterfront – TriMet + Tram",
-        path: "south-waterfront/",          // -> /south-waterfront/index.html
-        notes: "55\" lobby display · live TriMet arrivals & OHSU Tram schedule."
+        id: "south-waterfront-solari",
+        label: "South Waterfront – Solari Split-Flap",
+        path: "South-Waterfront/",
+        notes: "55\" lobby display · live TriMet arrivals & OHSU Tram schedule with Solari split-flap animation."
+      },
+      {
+        id: "south-waterfront-flip",
+        label: "South Waterfront – Screen Flip",
+        path: "So.waterfront/",
+        notes: "55\" lobby display · live TriMet arrivals & OHSU Tram schedule with screen flip transition."
+      },
+      {
+        id: "south-waterfront-legacy",
+        label: "South Waterfront – Legacy Version",
+        path: "ticker_ohsu_public_splitflap%20(12).html",
+        notes: "Earlier version of the South Waterfront status board."
       }
-      // Add more boards as you create them:
-      // { id: "hospital-status", label: "Hospital Status Board", path: "hospital-status/", notes: "ED / OR overview." }
     ];
 
     function initSelector() {
