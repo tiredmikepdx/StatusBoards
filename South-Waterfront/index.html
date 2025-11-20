@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>South Waterfront Live Ticker</title>
+  <title>South Waterfront Live Ticker – Solari Split</title>
   <style>
     :root {
       --bg: #020617;
@@ -24,19 +24,35 @@
       box-sizing: border-box;
     }
 
-    body {
+    html, body {
       margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      /* Base size tuned for ~55" 1080p display */
+      font-size: clamp(18px, 1.25vw, 26px);
       background: radial-gradient(circle at top, #1f2937, #020617 40%);
       color: var(--text-main);
-      height: 100vh;
       display: flex;
       flex-direction: column;
-      perspective: 2000px; /* for screen flip effect */
+      perspective: 2000px;
+      overflow: hidden;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      /* Base size tuned for ~55" 1080p display */
+      font-size: clamp(18px, 1.25vw, 26px);
+      background: radial-gradient(circle at top, #1f2937, #020617 40%);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      perspective: 2000px;
     }
 
     .header {
-      padding: 1rem 1.5rem 0.5rem;
+      padding: 0.6rem 1.5rem 0.3rem;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -46,25 +62,26 @@
     .title-block {
       display: flex;
       flex-direction: column;
-      gap: 0.25rem;
+      gap: 0.15rem;
     }
 
     .title-row {
       display: flex;
-      align-items: center;
-      gap: 1rem;
+      align-items: baseline;
+      gap: 1.25rem;
       flex-wrap: wrap;
     }
 
     .title {
-      font-size: clamp(1.8rem, 3vw, 2.5rem);
+      font-size: clamp(2.2rem, 3.2vw, 3.6rem);
       font-weight: 700;
       letter-spacing: 0.08em;
       text-transform: uppercase;
+      line-height: 1.05;
     }
 
     .subtitle {
-      font-size: 0.9rem;
+      font-size: clamp(0.8rem, 0.9vw, 1rem);
       color: var(--text-muted);
       text-transform: uppercase;
       letter-spacing: 0.16em;
@@ -75,7 +92,7 @@
       flex-direction: column;
       align-items: flex-end;
       gap: 0.25rem;
-      font-size: 0.85rem;
+      font-size: clamp(0.8rem, 0.9vw, 1rem);
     }
 
     .header-left {
@@ -86,36 +103,37 @@
 
     .logo-block {
       flex-shrink: 0;
-      width: 40px;
-      height: 40px;
-      border-radius: 12px;
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: radial-gradient(circle at top, rgba(56, 189, 248, 0.25), rgba(15, 23, 42, 0.95));
-      border: 1px solid rgba(148, 163, 184, 0.5);
-      box-shadow: 0 0 18px rgba(56, 189, 248, 0.6);
+      background: radial-gradient(circle at top, rgba(56, 189, 248, 0.3), rgba(15, 23, 42, 0.96));
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      box-shadow: 0 0 24px rgba(56, 189, 248, 0.65);
       overflow: hidden;
     }
 
     .torch-logo {
-      max-width: 32px;
-      max-height: 32px;
+      max-width: 48px;
+      max-height: 48px;
       display: block;
     }
 
     .clock-display {
       font-variant-numeric: tabular-nums;
-      font-size: 2rem;
+      font-size: clamp(1.6rem, 2.1vw, 2.4rem);
       font-weight: 600;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
       color: var(--text-main);
       text-align: right;
+      white-space: nowrap;
     }
 
     .status-pill {
-      padding: 0.15rem 0.65rem;
+      padding: 0.18rem 0.7rem;
       border-radius: 999px;
       border: 1px solid #16a34a33;
       color: var(--success);
@@ -128,11 +146,11 @@
     }
 
     .status-dot {
-      width: 0.5rem;
-      height: 0.5rem;
+      width: 0.55rem;
+      height: 0.55rem;
       border-radius: 999px;
       background: var(--success);
-      box-shadow: 0 0 12px rgba(34, 197, 94, 0.8);
+      box-shadow: 0 0 12px rgba(34, 197, 94, 0.9);
     }
 
     .last-updated {
@@ -145,12 +163,8 @@
       grid-template-columns: repeat(2, minmax(0, 1fr));
       grid-template-rows: minmax(0, 1fr);
       gap: 1rem;
-      padding: 0.75rem 1.5rem 1.25rem;
+      padding: 0.3rem 1.5rem 0.8rem;
       transform-style: preserve-3d;
-    }
-
-    .layout.screen-flip {
-      animation: flipScreen 0.8s ease-in-out;
     }
 
     @media (max-width: 900px) {
@@ -162,30 +176,30 @@
 
     .panel {
       position: relative;
-      border-radius: 1.5rem;
-      padding: 1rem 1.25rem;
+      border-radius: 1.4rem;
+      padding: 0.8rem 1.1rem 0.9rem;
       border: 1px solid var(--card-border);
       background: radial-gradient(circle at top left, rgba(148, 163, 184, 0.16), transparent 55%),
-                  radial-gradient(circle at bottom right, rgba(15, 23, 42, 0.9), rgba(3, 7, 18, 0.98));
+                  radial-gradient(circle at bottom right, rgba(15, 23, 42, 0.95), rgba(3, 7, 18, 0.99));
       display: flex;
       flex-direction: column;
       min-height: 0;
       overflow: hidden;
-      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.7);
-    }
+      box-shadow: 0 18px 44px rgba(0, 0, 0, 0.75);
+     overflow:hidden;}
 
     .panel-header {
       display: flex;
       align-items: baseline;
       justify-content: space-between;
       gap: 0.5rem;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.25rem;
     }
 
     .panel-title {
-      font-size: 1.1rem;
+      font-size: clamp(1.2rem, 1.5vw, 1.7rem);
       font-weight: 600;
-      letter-spacing: 0.16em;
+      letter-spacing: 0.22em;
       text-transform: uppercase;
       display: flex;
       align-items: center;
@@ -193,20 +207,21 @@
     }
 
     .panel-tagline {
-      font-size: 0.75rem;
+      font-size: clamp(0.75rem, 0.85vw, 0.95rem);
       color: var(--text-muted);
       text-transform: uppercase;
-      letter-spacing: 0.16em;
+      letter-spacing: 0.18em;
     }
 
     .panel-pill {
-      padding: 0.15rem 0.55rem;
+      padding: 0.18rem 0.6rem;
       border-radius: 999px;
-      font-size: 0.7rem;
+      font-size: clamp(0.7rem, 0.8vw, 0.95rem);
       text-transform: uppercase;
-      letter-spacing: 0.18em;
+      letter-spacing: 0.2em;
       border: 1px solid currentColor;
       opacity: 0.9;
+      white-space: nowrap;
     }
 
     .panel-bus { color: var(--accent-bus); }
@@ -215,15 +230,15 @@
     .panel-streetcar { color: var(--accent-streetcar); }
 
     .tram-weather {
-      margin-top: 0.25rem;
-      margin-bottom: 0.35rem;
+      margin-top: 0.1rem;
+      margin-bottom: 0.45rem;
       display: flex;
       flex-direction: column;
       gap: 0.35rem;
     }
 
     .tram-weather-header {
-      font-size: 0.75rem;
+      font-size: clamp(0.75rem, 0.8vw, 0.9rem);
       text-transform: uppercase;
       letter-spacing: 0.18em;
       color: var(--text-muted);
@@ -232,25 +247,25 @@
     .tram-weather-grid {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 0.5rem;
-      font-size: 0.85rem;
+      gap: 0.55rem;
+      font-size: clamp(0.85rem, 0.95vw, 1.05rem);
     }
 
     .tram-weather-tile {
-      border-radius: 1rem;
+      border-radius: 0.9rem;
       padding: 0.55rem 0.6rem;
-      background: rgba(15, 23, 42, 0.9);
-      border: 1px solid rgba(55, 65, 81, 0.9);
+      background: rgba(15, 23, 42, 0.92);
+      border: 1px solid rgba(55, 65, 81, 0.92);
       display: flex;
       flex-direction: column;
-      gap: 0.15rem;
+      gap: 0.18rem;
       align-items: flex-start;
       min-width: 0;
     }
 
     .tram-weather-time {
       font-variant-numeric: tabular-nums;
-      font-size: 0.8rem;
+      font-size: clamp(0.8rem, 0.85vw, 0.95rem);
       color: var(--text-muted);
       text-transform: uppercase;
       letter-spacing: 0.12em;
@@ -263,112 +278,201 @@
     }
 
     .tram-weather-icon {
-      font-size: 1.35rem;
+      font-size: clamp(1.4rem, 1.7vw, 1.9rem);
     }
 
     .tram-weather-temp {
-      font-size: 1rem;
+      font-size: clamp(1.05rem, 1.2vw, 1.3rem);
       font-weight: 600;
     }
 
     .tram-weather-wind {
-      font-size: 0.8rem;
+      font-size: clamp(0.8rem, 0.85vw, 0.95rem);
       color: var(--text-muted);
     }
 
-    @media (max-width: 900px) {
-      .tram-weather-grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-      }
-    }
-
-    .rows {
-      margin-top: 0.35rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.35rem;
-      font-size: 0.95rem;
-      flex: 1;
-      justify-content: space-evenly;
-    }
-
-    .row {
-      display: grid;
-      grid-template-columns: 0.35fr 0.65fr 0.35fr;
-      align-items: center;
-      gap: 0.75rem;
-      padding: 0.45rem 0.7rem;
-      border-radius: 999px;
-      background: rgba(15, 23, 42, 0.8);
-      border: 1px solid rgba(31, 41, 55, 0.9);
-      backdrop-filter: blur(10px);
+    .row-header {
+      font-size: clamp(0.75rem, 0.85vw, 0.95rem);
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: var(--text-muted);
+      margin-top: 0.15rem;
+      margin-bottom: 0.25rem;
+      opacity: 0.9;
       transform-origin: center center;
       transform-style: preserve-3d;
     }
 
-    /* NEW: split-flap cascading animation */
-    .row.split-flap-animate,
-    .row-header.split-flap-animate {
-      animation: splitFlap 0.6s ease-out forwards;
+    .rows {
+      margin-top: 0.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      font-size: clamp(1.05rem, 1.2vw, 1.35rem);
+      flex: 1;
+      justify-content: space-evenly;
+     overflow:hidden;}
+
+    /* Solari-style row container */
+    .row {
+      position: relative;
+      border-radius: 0.95rem;
+      background: transparent;
+      border: none;
+      padding: 0;
+      height: 3.8rem;
+      min-height: 3.8rem;
+      transform-style: preserve-3d;
+      overflow: hidden;
     }
 
-    @keyframes splitFlap {
+    @media (min-width: 1920px) {
+      .row {
+        height: 4.2rem;
+        min-height: 4.2rem;
+      }
+    }
+
+    .solari-row {
+      --solari-delay: 0s;
+    }
+
+    .solari-content {
+      position: absolute;
+      inset: 0;
+      padding: 0.3rem 0.85rem;
+      display: grid;
+      grid-template-columns: 0.35fr 0.7fr 0.4fr;
+      align-items: center;
+      gap: 0.85rem;
+      font-size: inherit;
+      z-index: 1;
+    }
+
+.solari-content > div:nth-child(2) {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .solari-content > div:nth-child(3) {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .solari-flap {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 50%;
+      background: linear-gradient(to bottom, rgba(15, 23, 42, 0.96), rgba(2, 6, 23, 0.98));
+      border-left: 1px solid rgba(31, 41, 55, 0.95);
+      border-right: 1px solid rgba(31, 41, 55, 0.95);
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.7);
+      backface-visibility: hidden;
+      transform-style: preserve-3d;
+      transform-origin: center;
+      z-index: 2;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .solari-flap-top {
+      top: 0;
+      border-top: 1px solid rgba(51, 65, 85, 1);
+      border-bottom: 1px solid rgba(15, 23, 42, 0.9);
+      border-radius: 0.95rem 0.95rem 0.15rem 0.15rem;
+      transform-origin: center bottom;
+    }
+
+    .solari-flap-bottom {
+      bottom: 0;
+      border-top: 1px solid rgba(15, 23, 42, 0.9);
+      border-bottom: 1px solid rgba(15, 23, 42, 0.95);
+      border-radius: 0.15rem 0.15rem 0.95rem 0.95rem;
+      transform-origin: center top;
+    }
+
+    /* Solari flip animation */
+    .solari-row.solari-animate .solari-flap-top {
+      animation: solariFlipTop 0.38s ease-out forwards;
+      animation-delay: var(--solari-delay);
+    }
+
+    .solari-row.solari-animate .solari-flap-bottom {
+      animation: solariFlipBottom 0.42s ease-out forwards;
+      animation-delay: calc(var(--solari-delay) + 0.16s);
+    }
+
+    @keyframes solariFlipTop {
       0% {
         transform: rotateX(90deg);
         opacity: 0;
-        box-shadow: 0 12px 25px rgba(0, 0, 0, 0.7);
       }
       40% {
-        transform: rotateX(-15deg);
+        transform: rotateX(-20deg);
         opacity: 1;
-        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.7);
+      }
+      100% {
+        transform: rotateX(0deg);
+        opacity: 0;
+        box-shadow: none;
+      }
+    }
+
+    @keyframes solariFlipBottom {
+      0% {
+        transform: rotateX(-90deg);
+        opacity: 0;
+      }
+      40% {
+        transform: rotateX(15deg);
+        opacity: 1;
+      }
+      100% {
+        transform: rotateX(0deg);
+        opacity: 0;
+        box-shadow: none;
+      }
+    }
+
+    /* Header flip for row-header labels */
+    @keyframes solariFlipHeader {
+      0% {
+        transform: rotateX(70deg);
+        opacity: 0;
+      }
+      40% {
+        transform: rotateX(-10deg);
+        opacity: 1;
       }
       100% {
         transform: rotateX(0deg);
         opacity: 1;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
       }
     }
 
-    @keyframes flipScreen {
-      0%   { transform: rotateX(90deg);  opacity: 0; }
-      50%  { transform: rotateX(-10deg); opacity: 1; }
-      100% { transform: rotateX(0deg);   opacity: 1; }
-    }
-
-    .row.placeholder {
+    .row.placeholder .solari-content {
       opacity: 0.35;
-      border-style: dashed;
+    }
+
+    .row.placeholder .solari-flap {
+      background: rgba(15, 23, 42, 0.85);
       box-shadow: none;
-      animation: none;
-    }
-
-    .row-header {
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 0.18em;
-      color: var(--text-muted);
-      margin-bottom: 0.25rem;
-      opacity: 0.85;
-      transform-origin: center center;
-      transform-style: preserve-3d;
-    }
-
-    .row-dim {
-      color: var(--text-muted);
-      font-size: 0.85rem;
+      border-style: dashed;
     }
 
     .chip-line {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      min-width: 2.2rem;
-      padding: 0.2rem 0.6rem;
+      min-width: 2.6rem;
+      padding: 0.22rem 0.7rem;
       border-radius: 999px;
-      border: 1px solid currentColor;
+      border: 1px solid rgba(148, 163, 184, 0.9);
       font-weight: 600;
-      font-size: 0.85rem;
+      font-size: 0.9em;
       text-transform: uppercase;
     }
 
@@ -376,8 +480,9 @@
       display: inline-flex;
       align-items: center;
       justify-content: flex-end;
-      gap: 0.4rem;
+      gap: 0.45rem;
       font-variant-numeric: tabular-nums;
+      font-size: 0.95em;
     }
 
     .chip-time span:first-child {
@@ -385,11 +490,11 @@
     }
 
     .pill-soon {
-      padding: 0.05rem 0.45rem;
+      padding: 0.08rem 0.5rem;
       border-radius: 999px;
       border: 1px solid rgba(234, 179, 8, 0.55);
       color: #eab308;
-      font-size: 0.65rem;
+      font-size: 0.7em;
       text-transform: uppercase;
       letter-spacing: 0.16em;
     }
@@ -399,27 +504,27 @@
       color: #22c55e;
     }
 
-    .pill-delayed {
+    .pill-later {
       border-color: rgba(249, 115, 22, 0.75);
       color: #f97316;
     }
 
     .empty-state {
-      font-size: 0.85rem;
+      font-size: clamp(0.85rem, 0.95vw, 1.05rem);
       color: var(--text-muted);
       font-style: italic;
       margin-top: 0.25rem;
     }
 
     .ticker-footer {
-      padding: 0.25rem 1.5rem 0.75rem;
-      font-size: 0.8rem;
+      padding: 0.3rem 1.5rem 0.6rem;
+      font-size: clamp(0.8rem, 0.9vw, 1rem);
       color: var(--text-muted);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-top: 1px solid rgba(31, 41, 55, 0.85);
-      background: radial-gradient(circle at top, rgba(15, 23, 42, 0.9), rgba(2, 6, 23, 0.98));
+      border-top: 1px solid rgba(31, 41, 55, 0.9);
+      background: radial-gradient(circle at top, rgba(15, 23, 42, 0.96), rgba(2, 6, 23, 0.99));
     }
 
     .ticker-footer span strong {
@@ -429,6 +534,11 @@
 
     .hint {
       opacity: 0.7;
+    }
+
+    /* Panel visibility for modality pairs */
+    .panel-hidden {
+      display: none !important;
     }
   </style>
 </head>
@@ -454,27 +564,42 @@
     <div class="status-block">
       <div class="status-pill">
         <span class="status-dot"></span>
-        <span id="mode-label">Live Board</span>
+        <span id="mode-label">Live Board · Bus &amp; MAX</span>
       </div>
       <div class="last-updated" id="last-updated">Initializing…</div>
     </div>
   </header>
 
   <main class="layout">
-    <section class="panel" id="panel-bus">
+    <!-- Pair 0: Bus + MAX -->
+    <section class="panel" id="panel-bus" data-pair="0">
       <div class="panel-header">
         <div>
           <div class="panel-title panel-bus">Bus</div>
-          <div class="panel-tagline">Next three departures</div>
+          <div class="panel-tagline">Next departures · South Waterfront</div>
         </div>
         <div class="panel-pill panel-bus">Lines &amp; route names</div>
       </div>
-      <div class="row-header">LINE · DESTINATION · TIME</div>
+      <div class="row-header" data-kind-header="bus">LINE · DESTINATION · TIME</div>
       <div class="rows" id="rows-bus"></div>
       <div class="empty-state" id="empty-bus" hidden>No live bus arrivals for this stop right now.</div>
     </section>
 
-    <section class="panel" id="panel-tram">
+    <section class="panel" id="panel-max" data-pair="0">
+      <div class="panel-header">
+        <div>
+          <div class="panel-title panel-max">MAX</div>
+          <div class="panel-tagline">Next trains · Orange Line</div>
+        </div>
+        <div class="panel-pill panel-max">Line · Destination · Time</div>
+      </div>
+      <div class="row-header" data-kind-header="max">LINE · DESTINATION · TIME</div>
+      <div class="rows" id="rows-max"></div>
+      <div class="empty-state" id="empty-max" hidden>No live MAX arrivals for this platform right now.</div>
+    </section>
+
+    <!-- Pair 1: Tram + Streetcar -->
+    <section class="panel panel-hidden" id="panel-tram" data-pair="1">
       <div class="panel-header">
         <div>
           <div class="panel-title panel-tram">Aerial Tram &amp; Weather</div>
@@ -488,33 +613,20 @@
         <div class="tram-weather-grid" id="tram-weather-grid"></div>
       </div>
 
-      <div class="row-header">DAYS · SERVICE · FREQUENCY</div>
+      <div class="row-header" data-kind-header="tram">DAYS · SERVICE · FREQUENCY</div>
       <div class="rows" id="rows-tram"></div>
       <div class="empty-state" id="empty-tram" hidden>Tram service not currently running.</div>
     </section>
 
-    <section class="panel" id="panel-max">
-      <div class="panel-header">
-        <div>
-          <div class="panel-title panel-max">MAX</div>
-          <div class="panel-tagline">Next three trains</div>
-        </div>
-        <div class="panel-pill panel-max">Line · Destination · Time</div>
-      </div>
-      <div class="row-header">LINE · DESTINATION · TIME</div>
-      <div class="rows" id="rows-max"></div>
-      <div class="empty-state" id="empty-max" hidden>No live MAX arrivals for this platform right now.</div>
-    </section>
-
-    <section class="panel" id="panel-streetcar">
+    <section class="panel panel-hidden" id="panel-streetcar" data-pair="1">
       <div class="panel-header">
         <div>
           <div class="panel-title panel-streetcar">Streetcar</div>
-          <div class="panel-tagline">Next three cars</div>
+          <div class="panel-tagline">Next cars · NS/CL Lines</div>
         </div>
         <div class="panel-pill panel-streetcar">Line · Direction · Time</div>
       </div>
-      <div class="row-header">LINE · DESTINATION · TIME</div>
+      <div class="row-header" data-kind-header="streetcar">LINE · DESTINATION · TIME</div>
       <div class="rows" id="rows-streetcar"></div>
       <div class="empty-state" id="empty-streetcar" hidden>No live Streetcar arrivals for this stop right now.</div>
     </section>
@@ -524,7 +636,7 @@
     <span>
       Data source: <strong>TriMet &amp; OHSU Aerial Tram</strong> · Times are estimates.
     </span>
-    <span class="hint" id="slide-timer">Page 1/2 · Next in 15s</span>
+    <span class="hint" id="slide-timer">Solari flip cycling Bus/MAX ↔ Tram/Streetcar every 15s</span>
   </footer>
 
   <script>
@@ -566,13 +678,18 @@
     const WEATHER_HOURS_AHEAD = 3;
     const WEATHER_REFRESH_MINUTES = 10;
 
-    const REFRESH_SECONDS = 30;
-    const MAX_ROWS_PER_PANEL = 7;
-    const SLIDES = [["bus", "tram"], ["max", "streetcar"]];
-    const SLIDE_SECONDS = 15;
-    let currentSlide = 0;
-    let slideCountdown = SLIDE_SECONDS;
-    let isSlideAnimating = false;
+    const REFRESH_SECONDS = 15;
+    const MAX_ROWS_PER_PANEL = 6;
+
+    // modality pair: 0 -> Bus + MAX, 1 -> Tram + Streetcar
+    let currentPair = 0;
+
+    const PANEL_ANIMATION_OFFSETS = {
+      bus: 0.00,
+      max: 0.15,
+      tram: 0.00,
+      streetcar: 0.15
+    };
 
     function formatTime(date) {
       return date.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
@@ -586,14 +703,14 @@
     function classifyPill(mins) {
       if (mins <= 0) return "now";
       if (mins <= 3) return "soon";
-      if (mins >= 20) return "delayed";
+      if (mins >= 20) return "later";
       return "";
     }
 
     function pillClass(pill) {
       if (pill === "now") return "pill-soon pill-now";
       if (pill === "soon") return "pill-soon";
-      if (pill === "delayed") return "pill-soon pill-delayed";
+      if (pill === "later") return "pill-soon pill-later";
       return "pill-soon";
     }
 
@@ -608,16 +725,21 @@
       });
     }
 
-    function updateLastUpdated(success) {
+    function updateModeLabel(success) {
       const el = document.getElementById("last-updated");
       const modeLabel = document.getElementById("mode-label");
       const now = new Date();
+
       if (el) {
         el.textContent = success
           ? `Updated ${now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })}`
           : `Update error at ${now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })}`;
       }
-      if (modeLabel) modeLabel.textContent = "Live Board";
+
+      if (modeLabel) {
+        const label = currentPair === 0 ? "Bus & MAX" : "Tram & Streetcar";
+        modeLabel.textContent = `Live Board · ${label}`;
+      }
     }
 
     function mapWeatherCodeToIcon(code) {
@@ -845,29 +967,35 @@
       return byStop;
     }
 
-    function applySplitFlapAnimation(el, index, baseDelay = 0.05) {
-      if (!el) return;
-      el.classList.remove("split-flap-animate");
-      void el.offsetWidth;
-      el.style.animationDelay = `${(index * baseDelay).toFixed(2)}s`;
-      el.classList.add("split-flap-animate");
+    function resetSolariAnimation(rowEl) {
+      if (!rowEl) return;
+      rowEl.classList.remove("solari-animate");
+      void rowEl.offsetWidth;
+    }
+
+    function applySolariAnimation(rowEl, indexInPanel, kind) {
+      if (!rowEl) return;
+      resetSolariAnimation(rowEl);
+      const panelOffset = PANEL_ANIMATION_OFFSETS[kind] ?? 0;
+      const delay = panelOffset + indexInPanel * 0.08;
+      rowEl.style.setProperty("--solari-delay", `${delay.toFixed(2)}s`);
+      rowEl.classList.add("solari-animate");
     }
 
     function animatePanelHeader(kind) {
-      const header = document.querySelector(`#panel-${kind} .row-header`);
-      if (header) {
-        applySplitFlapAnimation(header, 0, 0);
-      }
+      const header = document.querySelector(`[data-kind-header="${kind}"]`);
+      if (!header) return;
+      header.style.animationName = "none";
+      void header.offsetWidth;
+      const panelOffset = PANEL_ANIMATION_OFFSETS[kind] ?? 0;
+      header.style.animationDelay = `${panelOffset.toFixed(2)}s`;
+      header.style.animationDuration = "0.4s";
+      header.style.animationFillMode = "forwards";
+      header.style.animationTimingFunction = "ease-out";
+      header.style.animationName = "solariFlipHeader";
     }
 
-    function createRowElement(entry, indexInPanel) {
-      const mins = minutesUntil(entry.when);
-      const pill = classifyPill(mins);
-
-      const row = document.createElement("div");
-      row.className = "row";
-      applySplitFlapAnimation(row, indexInPanel);
-
+    function buildSolariRowContent(entry) {
       const colLine = document.createElement("div");
       const chipLine = document.createElement("div");
       chipLine.className = "chip-line";
@@ -879,6 +1007,9 @@
 
       const colTime = document.createElement("div");
       colTime.className = "chip-time";
+
+      const mins = minutesUntil(entry.when);
+      const pill = classifyPill(mins);
 
       const timeLabel = document.createElement("span");
       const minsLabel = document.createElement("span");
@@ -896,15 +1027,47 @@
         colTime.appendChild(pillSpan);
       }
 
-      row.appendChild(colLine);
-      row.appendChild(colDest);
-      row.appendChild(colTime);
+      return { colLine, colDest, colTime };
+    }
+
+    function createSolariRow(entry, indexInPanel, kind) {
+      const row = document.createElement("div");
+      row.className = "row solari-row";
+
+      const flapTop = document.createElement("div");
+      flapTop.className = "solari-flap solari-flap-top";
+
+      const flapBottom = document.createElement("div");
+      flapBottom.className = "solari-flap solari-flap-bottom";
+
+      const content = document.createElement("div");
+      content.className = "solari-content";
+
+      const { colLine, colDest, colTime } = buildSolariRowContent(entry);
+      content.appendChild(colLine);
+      content.appendChild(colDest);
+      content.appendChild(colTime);
+
+      row.appendChild(content);
+      row.appendChild(flapTop);
+      row.appendChild(flapBottom);
+
+      applySolariAnimation(row, indexInPanel, kind);
       return row;
     }
 
-    function createPlaceholderRow() {
+    function createPlaceholderRow(kind, indexInPanel) {
       const row = document.createElement("div");
-      row.className = "row placeholder";
+      row.className = "row solari-row placeholder";
+
+      const flapTop = document.createElement("div");
+      flapTop.className = "solari-flap solari-flap-top";
+
+      const flapBottom = document.createElement("div");
+      flapBottom.className = "solari-flap solari-flap-bottom";
+
+      const content = document.createElement("div");
+      content.className = "solari-content";
 
       const colLine = document.createElement("div");
       const chipLine = document.createElement("div");
@@ -918,15 +1081,18 @@
       const colTime = document.createElement("div");
       colTime.className = "chip-time";
       const timeLabel = document.createElement("span");
-      const minsLabel = document.createElement("span");
       timeLabel.textContent = "—";
-      minsLabel.textContent = "";
       colTime.appendChild(timeLabel);
-      colTime.appendChild(minsLabel);
 
-      row.appendChild(colLine);
-      row.appendChild(colDest);
-      row.appendChild(colTime);
+      content.appendChild(colLine);
+      content.appendChild(colDest);
+      content.appendChild(colTime);
+
+      row.appendChild(content);
+      row.appendChild(flapTop);
+      row.appendChild(flapBottom);
+
+      applySolariAnimation(row, indexInPanel, kind);
       return row;
     }
 
@@ -934,6 +1100,7 @@
       const rowsEl = document.getElementById(`rows-${kind}`);
       const emptyEl = document.getElementById(`empty-${kind}`);
       if (!rowsEl || !emptyEl) return;
+
       rowsEl.innerHTML = "";
 
       const entries = [];
@@ -952,12 +1119,12 @@
       emptyEl.hidden = used.length > 0;
 
       used.forEach((e, idx) => {
-        rowsEl.appendChild(createRowElement(e, idx));
+        rowsEl.appendChild(createSolariRow(e, idx, kind));
       });
 
       const placeholdersNeeded = Math.max(0, MAX_ROWS_PER_PANEL - used.length);
       for (let i = 0; i < placeholdersNeeded; i++) {
-        rowsEl.appendChild(createPlaceholderRow());
+        rowsEl.appendChild(createPlaceholderRow(kind, used.length + i));
       }
 
       animatePanelHeader(kind);
@@ -967,6 +1134,7 @@
       const rowsEl = document.getElementById("rows-tram");
       const emptyEl = document.getElementById("empty-tram");
       if (!rowsEl || !emptyEl) return;
+
       rowsEl.innerHTML = "";
 
       const rows = [
@@ -988,40 +1156,53 @@
       ];
 
       rows.forEach((r, idx) => {
-        const row = document.createElement("div");
-        row.className = "row";
-        applySplitFlapAnimation(row, idx);
+        const entry = {
+          line: r.label,
+          headsign: r.service,
+          when: new Date(Date.now() + (idx + 1) * 60 * 60 * 1000)
+        };
+        const row = createSolariRow(entry, idx, "tram");
 
-        const colLine = document.createElement("div");
-        const chipLine = document.createElement("div");
-        chipLine.className = "chip-line";
-        chipLine.textContent = r.label;
-        colLine.appendChild(chipLine);
+        const content = row.querySelector(".solari-content");
+        if (content && content.children[2]) {
+          const timeCol = content.children[2];
+          timeCol.innerHTML = "";
+          const span = document.createElement("span");
+          span.textContent = r.details;
+          timeCol.appendChild(span);
+        }
 
-        const colDest = document.createElement("div");
-        colDest.textContent = r.service;
-
-        const colTime = document.createElement("div");
-        colTime.className = "chip-time";
-        const timeLabel = document.createElement("span");
-        timeLabel.textContent = r.details;
-        colTime.appendChild(timeLabel);
-
-        row.appendChild(colLine);
-        row.appendChild(colDest);
-        row.appendChild(colTime);
         rowsEl.appendChild(row);
       });
 
       const currentCount = rowsEl.childElementCount;
       const placeholdersNeeded = Math.max(0, MAX_ROWS_PER_PANEL - currentCount);
       for (let i = 0; i < placeholdersNeeded; i++) {
-        rowsEl.appendChild(createPlaceholderRow());
+        rowsEl.appendChild(createPlaceholderRow("tram", currentCount + i));
       }
 
       emptyEl.hidden = true;
       emptyEl.style.display = "none";
       animatePanelHeader("tram");
+    }
+
+    function setVisiblePair(pairIndex) {
+      currentPair = pairIndex;
+      const panels = document.querySelectorAll(".panel");
+      panels.forEach((p) => {
+        const pair = Number(p.getAttribute("data-pair"));
+        if (pair === currentPair) {
+          p.classList.remove("panel-hidden");
+        } else {
+          p.classList.add("panel-hidden");
+        }
+      });
+
+      const label = currentPair === 0 ? "Bus & MAX" : "Tram & Streetcar";
+      const hint = document.getElementById("slide-timer");
+      if (hint) {
+        hint.textContent = `Solari flip cycling Bus/MAX ↔ Tram/Streetcar every ${REFRESH_SECONDS}s · Showing ${label}`;
+      }
     }
 
     function runSanityTests() {
@@ -1035,7 +1216,7 @@
 
       console.assert(classifyPill(-1) === "now", "classifyPill(-1) should be 'now'");
       console.assert(classifyPill(2) === "soon", "classifyPill(2) should be 'soon'");
-      console.assert(classifyPill(25) === "delayed", "classifyPill(25) should be 'delayed'");
+      console.assert(classifyPill(25) === "later", "classifyPill(25) should be 'later'");
 
       const now = new Date();
       const inFive = new Date(now.getTime() + 5 * 60000);
@@ -1044,63 +1225,6 @@
 
       const sunny = mapWeatherCodeToIcon(0);
       console.assert(sunny.icon === "☀️" && sunny.label === "Clear", "Weather code 0 should map to Clear/☀️");
-    }
-
-    function updateSlideTimer() {
-      const el = document.getElementById("slide-timer");
-      if (!el) return;
-      if (isSlideAnimating) {
-        el.textContent = `Page ${currentSlide + 1}/${SLIDES.length} · Flipping…`;
-      } else {
-        el.textContent = `Page ${currentSlide + 1}/${SLIDES.length} · Next in ${slideCountdown}s`;
-      }
-    }
-
-    function showSlide(idx, options) {
-      const animate = !options || options.animate !== false;
-      currentSlide = ((idx % SLIDES.length) + SLIDES.length) % SLIDES.length;
-
-      const allKinds = ["bus", "tram", "max", "streetcar"];
-      for (const kind of allKinds) {
-        const panel = document.getElementById(`panel-${kind}`);
-        if (!panel) continue;
-        panel.style.display = SLIDES[currentSlide].includes(kind) ? "flex" : "none";
-      }
-
-      const layout = document.querySelector(".layout");
-      if (animate && layout) {
-        isSlideAnimating = true;
-        layout.classList.add("screen-flip");
-        updateSlideTimer();
-
-        layout.addEventListener(
-          "animationend",
-          () => {
-            layout.classList.remove("screen-flip");
-            isSlideAnimating = false;
-            slideCountdown = SLIDE_SECONDS;
-            updateSlideTimer();
-          },
-          { once: true }
-        );
-      } else {
-        isSlideAnimating = false;
-        slideCountdown = SLIDE_SECONDS;
-        updateSlideTimer();
-      }
-    }
-
-    function slideTick() {
-      if (isSlideAnimating) {
-        updateSlideTimer();
-        return;
-      }
-      slideCountdown -= 1;
-      if (slideCountdown <= 0) {
-        showSlide(currentSlide + 1, { animate: true });
-      } else {
-        updateSlideTimer();
-      }
     }
 
     async function refreshBoard() {
@@ -1112,25 +1236,8 @@
 
       try {
         const resultSet = await fetchArrivalsForStops(allLocIds);
-        if (!resultSet) {
-          const emptyMap = new Map();
-          const streetcarFilter = (a) =>
-            a.mode === "streetcar" || a.routeSubType === "Streetcar" || a.streetCarFlag;
-          const maxFilter = (a) => {
-            const line = String(a.line || "");
-            const isMaxRoute = MAX_ROUTE_NUMBERS.has(line);
-            const isRail = a.routeType === "R" || a.routeSubType === "Light Rail";
-            return a.mode === "max" || isRail || isMaxRoute;
-          };
-          renderVehiclePanel("bus", emptyMap, CONFIG.bus, (a) => a.mode === "bus");
-          renderVehiclePanel("max", emptyMap, CONFIG.max, maxFilter);
-          renderVehiclePanel("streetcar", emptyMap, CONFIG.streetcar, streetcarFilter);
-          generateTramSchedule();
-          updateLastUpdated(false);
-          return;
-        }
+        const byStop = resultSet ? normalizeTriMetArrivals(resultSet) : new Map();
 
-        const byStop = normalizeTriMetArrivals(resultSet);
         const streetcarFilter = (a) =>
           a.mode === "streetcar" || a.routeSubType === "Streetcar" || a.streetCarFlag;
         const maxFilter = (a) => {
@@ -1144,9 +1251,12 @@
         renderVehiclePanel("max", byStop, CONFIG.max, maxFilter);
         renderVehiclePanel("streetcar", byStop, CONFIG.streetcar, streetcarFilter);
         generateTramSchedule();
-        updateLastUpdated(true);
+
+        updateModeLabel(true);
       } catch (err) {
         console.error("Error refreshing board:", err);
+
+        // Fallback: render placeholder rows + tram schedule so the board is never blank
         const emptyMap = new Map();
         const streetcarFilter = (a) =>
           a.mode === "streetcar" || a.routeSubType === "Streetcar" || a.streetCarFlag;
@@ -1156,11 +1266,13 @@
           const isRail = a.routeType === "R" || a.routeSubType === "Light Rail";
           return a.mode === "max" || isRail || isMaxRoute;
         };
+
         renderVehiclePanel("bus", emptyMap, CONFIG.bus, (a) => a.mode === "bus");
         renderVehiclePanel("max", emptyMap, CONFIG.max, maxFilter);
         renderVehiclePanel("streetcar", emptyMap, CONFIG.streetcar, streetcarFilter);
         generateTramSchedule();
-        updateLastUpdated(false);
+
+        updateModeLabel(false);
       }
     }
 
@@ -1169,14 +1281,17 @@
       updateClock();
       setInterval(updateClock, 1000);
 
-      showSlide(0, { animate: false });
-      updateSlideTimer();
-      setInterval(slideTick, 1000);
-
+      setVisiblePair(0);
       refreshBoard();
-      setInterval(refreshBoard, REFRESH_SECONDS * 1000);
-
       refreshWeather();
+
+      setInterval(() => {
+        // toggle modality pair then refresh data with fresh Solari flip
+        const nextPair = currentPair === 0 ? 1 : 0;
+        setVisiblePair(nextPair);
+        refreshBoard();
+      }, REFRESH_SECONDS * 1000);
+
       setInterval(refreshWeather, WEATHER_REFRESH_MINUTES * 60 * 1000);
     }
 
