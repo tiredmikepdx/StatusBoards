@@ -167,6 +167,67 @@
       display: block;
     }
 
+    .campus-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1rem;
+    }
+
+    .campus-section {
+      border-radius: 1rem;
+      padding: 1.25rem;
+      border: 1px solid var(--border);
+      background: rgba(15,23,42,0.94);
+    }
+
+    .campus-title {
+      font-size: 1rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--accent);
+      margin-bottom: 1rem;
+    }
+
+    .building-link {
+      display: block;
+      padding: 0.65rem 0.85rem;
+      margin-bottom: 0.5rem;
+      border-radius: 0.5rem;
+      background: rgba(15,23,42,0.6);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      text-decoration: none;
+      transition: all 0.2s ease;
+      font-size: 0.9rem;
+    }
+
+    .building-link:hover {
+      background: rgba(56,189,248,0.15);
+      border-color: var(--accent);
+      transform: translateX(3px);
+    }
+
+    .building-name {
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .alert-icon {
+      color: #f97316;
+      font-size: 1.1em;
+    }
+
+    .building-notes {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+      line-height: 1.4;
+    }
+
     @media (max-width: 640px) {
       .shell { padding: 1.5rem; }
     }
@@ -189,33 +250,111 @@
     </div>
 
     <div class="card">
-      <div class="card-label">Choose a board</div>
+      <div class="card-label">Quick Access</div>
       <div class="selector-row">
         <select id="board-select">
           <option value="">Select a display…</option>
         </select>
         <button class="btn" id="open-btn" disabled>Open Board</button>
       </div>
-      <div class="hint" id="url-hint">Select a board to preview its URL.</div>
+      <div class="hint" id="url-hint">Select a board above or click a building below.</div>
     </div>
 
-    <div class="list" id="board-list"></div>
+    <div class="campus-grid" id="campus-grid"></div>
   </div>
 
   <script>
     // Define your boards here. "path" is relative to this index.html.
     const BOARDS = [
+      // Legacy display (for backward compatibility)
       {
-        id: "south-waterfront",
-        label: "South Waterfront – TriMet + Tram",
-        path: "South-Waterfront/",          // -> /South-Waterfront/index.html
-        notes: "55\" lobby display · live TriMet arrivals & OHSU Tram schedule."
+        id: "waterfront-legacy",
+        label: "South Waterfront (Legacy)",
+        path: "waterfront/",
+        notes: "Original waterfront display · live TriMet arrivals & OHSU Tram schedule.",
+        campus: "Legacy"
+      },
+      
+      // South Waterfront Campus
+      {
+        id: "rlsb",
+        label: "Robertson Life Sciences Building",
+        path: "south-waterfront/rlsb/",
+        notes: "MAX Orange Line (City Center & Milwaukie) + Streetcar · 2730 S Moody Ave",
+        campus: "South Waterfront"
+      },
+      {
+        id: "kcrb",
+        label: "Knight Cancer Research Building",
+        path: "south-waterfront/kcrb/",
+        notes: "MAX Orange Line (City Center & Milwaukie) + Streetcar · 2720 S Moody Ave",
+        campus: "South Waterfront"
+      },
+      {
+        id: "chh",
+        label: "Center for Health & Healing",
+        path: "south-waterfront/chh/",
+        notes: "Streetcar + Bus Lines 35, 40 + Aerial Tram · 3303 S Bond Ave",
+        campus: "South Waterfront"
+      },
+      {
+        id: "rpv",
+        label: "Rood Family Pavilion",
+        path: "south-waterfront/rpv/",
+        notes: "Streetcar (accessibility priority enabled) · 3410 S Bond Ave",
+        campus: "South Waterfront"
+      },
+      {
+        id: "dentistry",
+        label: "School of Dentistry",
+        path: "south-waterfront/dentistry/",
+        notes: "MAX Orange Line + Streetcar · 2730 S Moody Ave",
+        campus: "South Waterfront"
+      },
+      
+      // Marquam Hill Campus
+      {
+        id: "hospital",
+        label: "OHSU Hospital",
+        path: "marquam-hill/hospital/",
+        notes: "Bus Lines 8, 43, 56 + Aerial Tram · 3181 SW Sam Jackson Park Rd",
+        campus: "Marquam Hill"
+      },
+      {
+        id: "doernbecher",
+        label: "Doernbecher Children's Hospital",
+        path: "marquam-hill/doernbecher/",
+        notes: "⚠️ Construction Alert · Using alternate stop at SW Terwilliger · 700 SW Campus Dr",
+        campus: "Marquam Hill",
+        alert: true
+      },
+      {
+        id: "casey-eye",
+        label: "Casey Eye Institute",
+        path: "marquam-hill/casey-eye/",
+        notes: "⚠️ Construction Alert · Using alternate stop at SW Terwilliger · 515 SW Campus Dr",
+        campus: "Marquam Hill",
+        alert: true
+      },
+      {
+        id: "kohler",
+        label: "Kohler Pavilion",
+        path: "marquam-hill/kohler/",
+        notes: "Aerial Tram (priority) + Bus Lines 8, 43, 56 · 808 SW Campus Dr",
+        campus: "Marquam Hill"
+      },
+      {
+        id: "va-medical",
+        label: "VA Medical Center",
+        path: "marquam-hill/va-medical/",
+        notes: "Bus Lines 8, 56 · 3710 SW US Veterans Hospital Rd",
+        campus: "Marquam Hill"
       }
     ];
 
     function initSelector() {
       const select = document.getElementById("board-select");
-      const list = document.getElementById("board-list");
+      const campusGrid = document.getElementById("campus-grid");
       const btn = document.getElementById("open-btn");
       const urlHint = document.getElementById("url-hint");
 
@@ -227,12 +366,64 @@
         select.appendChild(opt);
       }
 
-      // list of boards for human sanity / documentation
+      // Group boards by campus
+      const campuses = {};
+      for (const board of BOARDS) {
+        const campus = board.campus || "Other";
+        if (!campuses[campus]) {
+          campuses[campus] = [];
+        }
+        campuses[campus].push(board);
+      }
+
+      // Render campus sections
       const base = window.location.href.replace(/index\.html$/, "");
-      list.innerHTML = BOARDS.map(b => {
-        const url = new URL(b.path, base).toString();
-        return `<span><strong>${b.label}</strong> – <code>${url}</code><br>${b.notes || ""}</span>`;
-      }).join("");
+      
+      // Define campus order
+      const campusOrder = ["South Waterfront", "Marquam Hill", "Legacy", "Other"];
+      
+      for (const campus of campusOrder) {
+        if (!campuses[campus]) continue;
+        
+        const section = document.createElement("div");
+        section.className = "campus-section";
+        
+        const title = document.createElement("div");
+        title.className = "campus-title";
+        title.textContent = campus;
+        section.appendChild(title);
+        
+        for (const board of campuses[campus]) {
+          const link = document.createElement("a");
+          link.className = "building-link";
+          link.href = board.path;
+          
+          const name = document.createElement("div");
+          name.className = "building-name";
+          
+          if (board.alert) {
+            const icon = document.createElement("span");
+            icon.className = "alert-icon";
+            icon.textContent = "⚠️";
+            name.appendChild(icon);
+          }
+          
+          const nameText = document.createTextNode(board.label);
+          name.appendChild(nameText);
+          link.appendChild(name);
+          
+          if (board.notes) {
+            const notes = document.createElement("div");
+            notes.className = "building-notes";
+            notes.textContent = board.notes;
+            link.appendChild(notes);
+          }
+          
+          section.appendChild(link);
+        }
+        
+        campusGrid.appendChild(section);
+      }
 
       select.addEventListener("change", () => {
         const value = select.value;
@@ -242,7 +433,7 @@
           urlHint.textContent = `Selected board URL: ${url}`;
         } else {
           btn.disabled = true;
-          urlHint.textContent = "Select a board to preview its URL.";
+          urlHint.textContent = "Select a board above or click a building below.";
         }
       });
 

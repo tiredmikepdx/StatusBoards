@@ -1,0 +1,29 @@
+{
+  "building_id": "hospital",
+  "display_name": "OHSU Hospital",
+  "campus_region": "Marquam Hill",
+  "primary_stops": [
+    {
+      "id": 5028,
+      "label": "SW Sam Jackson Pk & OHSU",
+      "type": "bus",
+      "lines": ["8", "43", "56"]
+    }
+  ],
+  "secondary_stops": [
+    {
+      "id": 12844,
+      "label": "OHSU Aerial Tram · Upper Terminal",
+      "type": "tram",
+      "direction": "downhill"
+    }
+  ],
+  "alerts": {
+    "active": false,
+    "message": ""
+  },
+  "features": {
+    "show_tram_status": false,
+    "accessibility_highlight": false
+  }
+}

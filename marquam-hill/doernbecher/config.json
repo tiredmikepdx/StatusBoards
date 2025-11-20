@@ -1,0 +1,29 @@
+{
+  "building_id": "doernbecher",
+  "display_name": "Doernbecher Children's Hospital",
+  "campus_region": "Marquam Hill",
+  "primary_stops": [
+    {
+      "id": 11010,
+      "label": "SW Terwilliger & Campus",
+      "type": "bus",
+      "lines": ["8", "43", "56"]
+    }
+  ],
+  "secondary_stops": [
+    {
+      "id": 5028,
+      "label": "SW Sam Jackson Pk & OHSU",
+      "type": "bus",
+      "lines": ["8", "43", "56"]
+    }
+  ],
+  "alerts": {
+    "active": true,
+    "message": "NOTICE: Campus Dr stops are closed due to construction. Displaying arrivals for SW Terwilliger & Campus."
+  },
+  "features": {
+    "show_tram_status": false,
+    "accessibility_highlight": false
+  }
+}
