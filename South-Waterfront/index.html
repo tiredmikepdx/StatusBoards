@@ -768,20 +768,14 @@
       });
     }
 
-    function updateModeLabel(success) {
+    function updateLastUpdated(success) {
       const el = document.getElementById("last-updated");
-      const modeLabel = document.getElementById("mode-label");
       const now = new Date();
 
       if (el) {
         el.textContent = success
           ? `Updated ${now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })}`
           : `Update error at ${now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })}`;
-      }
-
-      if (modeLabel) {
-        const label = currentPair === 0 ? "Bus & MAX" : "Tram & Streetcar";
-        modeLabel.textContent = `Live Board · ${label}`;
       }
     }
 
@@ -1242,6 +1236,11 @@
       });
 
       const label = currentPair === 0 ? "Bus & MAX" : "Tram & Streetcar";
+      const modeLabel = document.getElementById("mode-label");
+      if (modeLabel) {
+        modeLabel.textContent = `Live Board · ${label}`;
+      }
+
       const hint = document.getElementById("slide-timer");
       if (hint) {
         hint.textContent = `Solari flip cycling Bus/MAX ↔ Tram/Streetcar every ${REFRESH_SECONDS}s · Showing ${label}`;
@@ -1295,7 +1294,7 @@
         renderVehiclePanel("streetcar", byStop, CONFIG.streetcar, streetcarFilter);
         generateTramSchedule();
 
-        updateModeLabel(true);
+        updateLastUpdated(true);
       } catch (err) {
         console.error("Error refreshing board:", err);
 
@@ -1315,7 +1314,7 @@
         renderVehiclePanel("streetcar", emptyMap, CONFIG.streetcar, streetcarFilter);
         generateTramSchedule();
 
-        updateModeLabel(false);
+        updateLastUpdated(false);
       }
     }
 
