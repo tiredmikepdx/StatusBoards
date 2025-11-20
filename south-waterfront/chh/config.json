@@ -1,0 +1,35 @@
+{
+  "building_id": "chh",
+  "display_name": "Center for Health & Healing",
+  "campus_region": "South Waterfront",
+  "primary_stops": [
+    {
+      "id": 12760,
+      "label": "Streetcar · S Moody & Gibbs South",
+      "type": "streetcar",
+      "direction": "southbound"
+    }
+  ],
+  "secondary_stops": [
+    {
+      "id": 12761,
+      "label": "Streetcar · S Moody & Gibbs North",
+      "type": "streetcar",
+      "direction": "northbound"
+    },
+    {
+      "id": 12845,
+      "label": "OHSU Aerial Tram · Lower Terminal",
+      "type": "tram",
+      "direction": "uphill"
+    }
+  ],
+  "alerts": {
+    "active": false,
+    "message": ""
+  },
+  "features": {
+    "show_tram_status": true,
+    "accessibility_highlight": false
+  }
+}

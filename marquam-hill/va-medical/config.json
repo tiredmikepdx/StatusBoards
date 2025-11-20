@@ -1,0 +1,22 @@
+{
+  "building_id": "va-medical",
+  "display_name": "VA Medical Center",
+  "campus_region": "Marquam Hill",
+  "primary_stops": [
+    {
+      "id": 5975,
+      "label": "Portland VA Medical Center",
+      "type": "bus",
+      "lines": ["8", "56"]
+    }
+  ],
+  "secondary_stops": [],
+  "alerts": {
+    "active": false,
+    "message": ""
+  },
+  "features": {
+    "show_tram_status": false,
+    "accessibility_highlight": false
+  }
+}

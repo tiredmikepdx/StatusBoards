@@ -1,0 +1,1419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>School of Dentistry – OHSU Transit</title>
+  <style>
+    :root {
+      --bg: #020617;
+      --bg-alt: #020617;
+      --card: #020617;
+      --card-border: #1f2937;
+      --accent-bus: #22c55e;
+      --accent-tram: #eab308;
+      --accent-max: #3b82f6;
+      --accent-streetcar: #ec4899;
+      --text-main: #f9fafb;
+      --text-muted: #9ca3af;
+      --danger: #f97316;
+      --success: #22c55e;
+      --row-height: clamp(3.8rem, 4vw, 4.4rem);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      /* Base size tuned for ~55" 1080p display */
+      font-size: clamp(18px, 1.25vw, 26px);
+      background: radial-gradient(circle at top, #1f2937, #020617 40%);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      perspective: 2000px;
+      overflow: hidden;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      /* Base size tuned for ~55" 1080p display */
+      font-size: clamp(18px, 1.25vw, 26px);
+      background: radial-gradient(circle at top, #1f2937, #020617 40%);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      perspective: 2000px;
+    }
+
+    .header {
+      padding: 0.6rem 1.5rem 0.3rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .title-block {
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+    }
+
+    .title-row {
+      display: flex;
+      align-items: baseline;
+      gap: 1.25rem;
+      flex-wrap: wrap;
+    }
+
+    .title {
+      font-size: clamp(2.2rem, 3.2vw, 3.6rem);
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      line-height: 1.05;
+    }
+
+    .subtitle {
+      font-size: clamp(0.8rem, 0.9vw, 1rem);
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+    }
+
+    .status-block {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 0.25rem;
+      font-size: clamp(0.8rem, 0.9vw, 1rem);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    .logo-block {
+      flex-shrink: 0;
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at top, rgba(56, 189, 248, 0.3), rgba(15, 23, 42, 0.96));
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      box-shadow: 0 0 24px rgba(56, 189, 248, 0.65);
+      overflow: hidden;
+    }
+
+    .torch-logo {
+      max-width: 48px;
+      max-height: 48px;
+      display: block;
+    }
+
+    .clock-display {
+      font-variant-numeric: tabular-nums;
+      font-size: clamp(1.6rem, 2.1vw, 2.4rem);
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-main);
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .status-pill {
+      padding: 0.18rem 0.7rem;
+      border-radius: 999px;
+      border: 1px solid #16a34a33;
+      color: var(--success);
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .status-dot {
+      width: 0.55rem;
+      height: 0.55rem;
+      border-radius: 999px;
+      background: var(--success);
+      box-shadow: 0 0 12px rgba(34, 197, 94, 0.9);
+    }
+
+    .last-updated {
+      color: var(--text-muted);
+    }
+
+    .layout {
+      flex: 1;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-rows: minmax(0, 1fr);
+      gap: 1rem;
+      padding: 0.3rem 1.5rem 0.8rem;
+      transform-style: preserve-3d;
+    }
+
+    @media (max-width: 900px) {
+      .layout {
+        grid-template-columns: 1fr;
+        grid-template-rows: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    .panel {
+      position: relative;
+      border-radius: 1.4rem;
+      padding: 0.8rem 1.1rem 0.9rem;
+      border: 1px solid var(--card-border);
+      background: radial-gradient(circle at top left, rgba(148, 163, 184, 0.16), transparent 55%),
+                  radial-gradient(circle at bottom right, rgba(15, 23, 42, 0.95), rgba(3, 7, 18, 0.99));
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
+      box-shadow: 0 18px 44px rgba(0, 0, 0, 0.75);
+     overflow:hidden;}
+
+    .panel-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 0.5rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .panel-title {
+      font-size: clamp(1.2rem, 1.5vw, 1.7rem);
+      font-weight: 600;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .panel-tagline {
+      font-size: clamp(0.75rem, 0.85vw, 0.95rem);
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+    }
+
+    .panel-pill {
+      padding: 0.18rem 0.6rem;
+      border-radius: 999px;
+      font-size: clamp(0.7rem, 0.8vw, 0.95rem);
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      border: 1px solid currentColor;
+      opacity: 0.9;
+      white-space: nowrap;
+    }
+
+    .panel-bus { color: var(--accent-bus); }
+    .panel-tram { color: var(--accent-tram); }
+    .panel-max { color: var(--accent-max); }
+    .panel-streetcar { color: var(--accent-streetcar); }
+
+    .tram-weather {
+      margin-top: 0.1rem;
+      margin-bottom: 0.45rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .tram-weather-header {
+      font-size: clamp(0.75rem, 0.8vw, 0.9rem);
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--text-muted);
+    }
+
+    .tram-weather-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.55rem;
+      grid-auto-rows: minmax(var(--row-height), 1fr);
+      font-size: clamp(0.85rem, 0.95vw, 1.05rem);
+    }
+
+    .tram-weather-tile {
+      border-radius: 0.9rem;
+      padding: 0.55rem 0.6rem;
+      background: rgba(15, 23, 42, 0.92);
+      border: 1px solid rgba(55, 65, 81, 0.92);
+      display: flex;
+      flex-direction: column;
+      gap: 0.18rem;
+      align-items: flex-start;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+      min-height: var(--row-height);
+      min-width: 0;
+    }
+
+    .tram-weather-tile::after {
+      content: "";
+      position: absolute;
+      left: 0.6rem;
+      right: 0.6rem;
+      top: 50%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(148, 163, 184, 0.25), transparent);
+      opacity: 0.8;
+      pointer-events: none;
+    }
+
+    .tram-weather-time {
+      font-variant-numeric: tabular-nums;
+      font-size: clamp(0.8rem, 0.85vw, 0.95rem);
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .tram-weather-main {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .tram-weather-icon {
+      font-size: clamp(1.4rem, 1.7vw, 1.9rem);
+    }
+
+    .tram-weather-temp {
+      font-size: clamp(1.05rem, 1.2vw, 1.3rem);
+      font-weight: 600;
+    }
+
+    .tram-weather-wind {
+      font-size: clamp(0.8rem, 0.85vw, 0.95rem);
+      color: var(--text-muted);
+    }
+
+    .row-header {
+      font-size: clamp(0.75rem, 0.85vw, 0.95rem);
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: var(--text-muted);
+      margin-top: 0.15rem;
+      margin-bottom: 0.25rem;
+      opacity: 0.9;
+      transform-origin: center center;
+      transform-style: preserve-3d;
+    }
+
+    .rows {
+      margin-top: 0.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      font-size: clamp(1.05rem, 1.2vw, 1.35rem);
+      flex: 1;
+      justify-content: space-evenly;
+     overflow:hidden;}
+
+    /* Solari-style row container */
+    .row {
+      position: relative;
+      border-radius: 0.95rem;
+      background: transparent;
+      border: none;
+      padding: 0;
+      min-height: var(--row-height);
+      transform-style: preserve-3d;
+      overflow: visible;
+    }
+
+    .solari-row {
+      --solari-delay: 0s;
+    }
+
+    .solari-content {
+      position: relative;
+      padding: 0.5rem 0.95rem;
+      display: grid;
+      grid-template-columns: minmax(0, 0.33fr) minmax(0, 0.7fr) minmax(0, 0.55fr);
+      align-items: start;
+      gap: 0.8rem;
+      font-size: inherit;
+      z-index: 1;
+      background: linear-gradient(180deg, rgba(15, 23, 42, 0.95), rgba(2, 6, 23, 0.98));
+      border: 1px solid rgba(55, 65, 81, 0.9);
+      box-shadow: 0 10px 26px rgba(0, 0, 0, 0.5);
+      border-radius: 0.95rem;
+      min-height: var(--row-height);
+    }
+
+    .solari-content::after {
+      content: "";
+      position: absolute;
+      left: 0.85rem;
+      right: 0.85rem;
+      top: 50%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(148, 163, 184, 0.35), transparent);
+      opacity: 0.8;
+      pointer-events: none;
+    }
+
+    .solari-content > div {
+      display: flex;
+      align-items: flex-start;
+      min-width: 0;
+      gap: 0.18rem;
+    }
+
+    .solari-content > div:nth-child(2) {
+      white-space: normal;
+      line-height: 1.2;
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+
+    .solari-content > div:nth-child(3) {
+      white-space: normal;
+      justify-content: flex-end;
+      align-items: flex-end;
+      text-align: right;
+      flex-direction: column;
+      gap: 0.2rem;
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+
+    .solari-flap {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: calc(var(--row-height) / 2);
+      background: linear-gradient(to bottom, rgba(15, 23, 42, 0.96), rgba(2, 6, 23, 0.98));
+      border-left: 1px solid rgba(31, 41, 55, 0.95);
+      border-right: 1px solid rgba(31, 41, 55, 0.95);
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.7);
+      backface-visibility: hidden;
+      transform-style: preserve-3d;
+      transform-origin: center;
+      z-index: 2;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .solari-flap-top {
+      top: 0;
+      border-top: 1px solid rgba(51, 65, 85, 1);
+      border-bottom: 1px solid rgba(15, 23, 42, 0.9);
+      border-radius: 0.95rem 0.95rem 0.15rem 0.15rem;
+      transform-origin: center bottom;
+    }
+
+    .solari-flap-bottom {
+      bottom: 0;
+      border-top: 1px solid rgba(15, 23, 42, 0.9);
+      border-bottom: 1px solid rgba(15, 23, 42, 0.95);
+      border-radius: 0.15rem 0.15rem 0.95rem 0.95rem;
+      transform-origin: center top;
+    }
+
+    /* Solari flip animation */
+    .solari-row.solari-animate .solari-flap-top {
+      animation: solariFlipTop 0.38s ease-out forwards;
+      animation-delay: var(--solari-delay);
+    }
+
+    .solari-row.solari-animate .solari-flap-bottom {
+      animation: solariFlipBottom 0.42s ease-out forwards;
+      animation-delay: calc(var(--solari-delay) + 0.16s);
+    }
+
+    @keyframes solariFlipTop {
+      0% {
+        transform: rotateX(90deg);
+        opacity: 0;
+      }
+      40% {
+        transform: rotateX(-20deg);
+        opacity: 1;
+      }
+      100% {
+        transform: rotateX(0deg);
+        opacity: 0;
+        box-shadow: none;
+      }
+    }
+
+    @keyframes solariFlipBottom {
+      0% {
+        transform: rotateX(-90deg);
+        opacity: 0;
+      }
+      40% {
+        transform: rotateX(15deg);
+        opacity: 1;
+      }
+      100% {
+        transform: rotateX(0deg);
+        opacity: 0;
+        box-shadow: none;
+      }
+    }
+
+    /* Header flip for row-header labels */
+    @keyframes solariFlipHeader {
+      0% {
+        transform: rotateX(70deg);
+        opacity: 0;
+      }
+      40% {
+        transform: rotateX(-10deg);
+        opacity: 1;
+      }
+      100% {
+        transform: rotateX(0deg);
+        opacity: 1;
+      }
+    }
+
+    .row.placeholder .solari-content {
+      opacity: 0.35;
+    }
+
+    .row.placeholder .solari-flap {
+      background: rgba(15, 23, 42, 0.85);
+      box-shadow: none;
+      border-style: dashed;
+    }
+
+    .chip-line {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 2.6rem;
+      padding: 0.22rem 0.7rem;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.9);
+      font-weight: 600;
+      font-size: 0.9em;
+      text-transform: uppercase;
+    }
+
+    .chip-time {
+      display: flex;
+      align-items: flex-end;
+      justify-content: flex-end;
+      flex-direction: column;
+      gap: 0.25rem;
+      font-variant-numeric: tabular-nums;
+      font-size: 0.92em;
+      white-space: normal;
+      text-align: right;
+      line-height: 1.15;
+    }
+
+    .chip-time span:first-child {
+      font-weight: 600;
+    }
+
+    .pill-soon {
+      padding: 0.08rem 0.5rem;
+      border-radius: 999px;
+      border: 1px solid rgba(234, 179, 8, 0.55);
+      color: #eab308;
+      font-size: 0.7em;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+    }
+
+    .pill-now {
+      border-color: rgba(34, 197, 94, 0.65);
+      color: #22c55e;
+    }
+
+    .pill-later {
+      border-color: rgba(249, 115, 22, 0.75);
+      color: #f97316;
+    }
+
+    .empty-state {
+      font-size: clamp(0.85rem, 0.95vw, 1.05rem);
+      color: var(--text-muted);
+      font-style: italic;
+      margin-top: 0.25rem;
+    }
+
+    .ticker-footer {
+      padding: 0.3rem 1.5rem 0.6rem;
+      font-size: clamp(0.8rem, 0.9vw, 1rem);
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(31, 41, 55, 0.9);
+      background: radial-gradient(circle at top, rgba(15, 23, 42, 0.96), rgba(2, 6, 23, 0.99));
+    }
+
+    .ticker-footer span strong {
+      font-weight: 600;
+      color: #e5e7eb;
+    }
+
+    .hint {
+      opacity: 0.7;
+    }
+
+    /* Panel visibility for modality pairs */
+    .panel-hidden {
+      display: none !important;
+    }
+
+    .alert-banner {
+      background: linear-gradient(135deg, #f97316, #ea580c);
+      color: white;
+      padding: 1rem 1.5rem;
+      font-weight: 600;
+      text-align: center;
+      font-size: 1rem;
+      letter-spacing: 0.05em;
+      border-bottom: 2px solid #c2410c;
+      animation: alertPulse 2s ease-in-out infinite;
+    }
+    
+    @keyframes alertPulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.9; }
+    }
+  </style>
+</head>
+<body>
+  <div class="alert-banner" id="alert-banner" style="display: none;"></div>
+  <header class="header">
+    <div class="header-left">
+      <div class="logo-block">
+        <img
+          src="https://upload.wikimedia.org/wikipedia/commons/d/d1/OHSU-RGB-4C-POS.png"
+          alt="OHSU torch logo"
+          class="torch-logo"
+          onerror="this.style.display='none'"
+        />
+      </div>
+      <div class="title-block">
+        <div class="subtitle">OHSU · South Waterfront</div>
+        <div class="title-row">
+          <div class="title">School of Dentistry</div>
+          <div class="clock-display" id="live-clock">--:--:--</div>
+        </div>
+      </div>
+    </div>
+    <div class="status-block">
+      <div class="status-pill">
+        <span class="status-dot"></span>
+        <span id="mode-label">Live Board · Bus &amp; MAX</span>
+      </div>
+      <div class="last-updated" id="last-updated">Initializing…</div>
+    </div>
+  </header>
+
+  <main class="layout">
+    <!-- Pair 0: Bus + MAX -->
+    <section class="panel" id="panel-bus" data-pair="0">
+      <div class="panel-header">
+        <div>
+          <div class="panel-title panel-bus">Bus</div>
+          <div class="panel-tagline">Next departures · South Waterfront</div>
+        </div>
+        <div class="panel-pill panel-bus">Lines &amp; route names</div>
+      </div>
+      <div class="row-header" data-kind-header="bus">LINE · DESTINATION · TIME</div>
+      <div class="rows" id="rows-bus"></div>
+      <div class="empty-state" id="empty-bus" hidden>No live bus arrivals for this stop right now.</div>
+    </section>
+
+    <section class="panel" id="panel-max" data-pair="0">
+      <div class="panel-header">
+        <div>
+          <div class="panel-title panel-max">MAX</div>
+          <div class="panel-tagline">Next trains · Orange Line</div>
+        </div>
+        <div class="panel-pill panel-max">Line · Destination · Time</div>
+      </div>
+      <div class="row-header" data-kind-header="max">LINE · DESTINATION · TIME</div>
+      <div class="rows" id="rows-max"></div>
+      <div class="empty-state" id="empty-max" hidden>No live MAX arrivals for this platform right now.</div>
+    </section>
+
+    <!-- Pair 1: Tram + Streetcar -->
+    <section class="panel panel-hidden" id="panel-tram" data-pair="1">
+      <div class="panel-header">
+        <div>
+          <div class="panel-title panel-tram">Aerial Tram &amp; Weather</div>
+          <div class="panel-tagline">Next 3 hours · South Waterfront</div>
+        </div>
+        <div class="panel-pill panel-tram">Forecast · Hours · Frequency</div>
+      </div>
+
+      <div class="tram-weather">
+        <div class="tram-weather-header">Hourly forecast</div>
+        <div class="tram-weather-grid" id="tram-weather-grid"></div>
+      </div>
+
+      <div class="row-header" data-kind-header="tram">DAYS · SERVICE · FREQUENCY</div>
+      <div class="rows" id="rows-tram"></div>
+      <div class="empty-state" id="empty-tram" hidden>Tram service not currently running.</div>
+    </section>
+
+    <section class="panel panel-hidden" id="panel-streetcar" data-pair="1">
+      <div class="panel-header">
+        <div>
+          <div class="panel-title panel-streetcar">Streetcar</div>
+          <div class="panel-tagline">Next cars · NS/CL Lines</div>
+        </div>
+        <div class="panel-pill panel-streetcar">Line · Direction · Time</div>
+      </div>
+      <div class="row-header" data-kind-header="streetcar">LINE · DESTINATION · TIME</div>
+      <div class="rows" id="rows-streetcar"></div>
+      <div class="empty-state" id="empty-streetcar" hidden>No live Streetcar arrivals for this stop right now.</div>
+    </section>
+  </main>
+
+  <footer class="ticker-footer">
+    <span>
+      Data source: <strong>TriMet &amp; OHSU Aerial Tram</strong> · Times are estimates.
+    </span>
+    <span class="hint" id="slide-timer">Solari flip cycling Bus/MAX ↔ Tram/Streetcar every 15s</span>
+  </footer>
+
+  <script>
+    const USE_LIVE_TRIMET = true;
+    const ENABLE_WEATHER = true;
+    const TRIMET_APP_ID = "1319D2D75C06E60EB3071D522";
+
+
+    // Load configuration from config.json
+    let BUILDING_CONFIG = null;
+    
+
+    function showAlert(message) {
+      const banner = document.getElementById('alert-banner');
+      if (banner && message) {
+        banner.textContent = message;
+        banner.style.display = 'block';
+      }
+    }
+    
+    async function loadConfig() {
+      try {
+        const response = await fetch('config.json');
+        BUILDING_CONFIG = await response.json();
+        console.log('Loaded config:', BUILDING_CONFIG);
+      } catch (err) {
+        console.error('Failed to load config.json:', err);
+      }
+    }
+    
+    // Convert config.json format to original CONFIG format
+    function buildConfigFromJSON(jsonConfig) {
+      const config = {
+        bus: { title: "Bus", color: "bus", stops: [] },
+        max: { title: "MAX", color: "max", stops: [] },
+        streetcar: { title: "Streetcar", color: "streetcar", stops: [] }
+      };
+      
+      const allStops = [...jsonConfig.primary_stops, ...jsonConfig.secondary_stops];
+      
+      for (const stop of allStops) {
+        if (stop.type === 'bus') {
+          config.bus.stops.push({ id: stop.id, label: stop.label });
+        } else if (stop.type === 'max') {
+          config.max.stops.push({ id: stop.id, label: stop.label });
+        } else if (stop.type === 'streetcar') {
+          config.streetcar.stops.push({ id: stop.id, label: stop.label });
+        }
+        // Tram handled separately in tram schedule section
+      }
+      
+      return config;
+    }
+    const CONFIG = {
+      bus: {
+        title: "Bus",
+        color: "bus",
+        stops: [
+          { id: 13732, label: "South Waterfront/S Moody · Westbound" },
+          { id: 13733, label: "South Waterfront/S Moody · Eastbound" }
+        ]
+      },
+      max: {
+        title: "MAX",
+        color: "max",
+        stops: [
+          { id: 13728, label: "MAX Orange · To City Center / Expo" },
+          { id: 13711, label: "MAX Orange · To Milwaukie" }
+        ]
+      },
+      streetcar: {
+        title: "Streetcar",
+        color: "streetcar",
+        stops: [
+          { id: 13602, label: "Streetcar · S Moody & Meade North" },
+          { id: 13601, label: "Streetcar · S Moody & Meade South" }
+        ]
+      }
+    };
+
+    const MAX_ROUTE_NUMBERS = new Set(["90", "100", "190", "200", "290"]);
+
+    const WEATHER_LAT = 45.499;
+    const WEATHER_LON = -122.671;
+    const WEATHER_HOURS_AHEAD = 3;
+    const WEATHER_REFRESH_MINUTES = 10;
+
+    const REFRESH_SECONDS = 15;
+    const MAX_ROWS_PER_PANEL = 6;
+
+    // modality pair: 0 -> Bus + MAX, 1 -> Tram + Streetcar
+    let currentPair = 0;
+
+    const PANEL_ANIMATION_OFFSETS = {
+      bus: 0.00,
+      max: 0.15,
+      tram: 0.00,
+      streetcar: 0.15
+    };
+
+    function formatTime(date) {
+      return date.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+    }
+
+    function minutesUntil(targetDate) {
+      const diffMs = targetDate.getTime() - Date.now();
+      return Math.round(diffMs / 60000);
+    }
+
+    function classifyPill(mins) {
+      if (mins <= 0) return "now";
+      if (mins <= 3) return "soon";
+      if (mins >= 20) return "later";
+      return "";
+    }
+
+    function pillClass(pill) {
+      if (pill === "now") return "pill-soon pill-now";
+      if (pill === "soon") return "pill-soon";
+      if (pill === "later") return "pill-soon pill-later";
+      return "pill-soon";
+    }
+
+    function updateClock() {
+      const clock = document.getElementById("live-clock");
+      if (!clock) return;
+      const now = new Date();
+      clock.textContent = now.toLocaleTimeString([], {
+        hour: "numeric",
+        minute: "2-digit",
+        second: "2-digit"
+      });
+    }
+
+    function updateLastUpdated(success) {
+      const el = document.getElementById("last-updated");
+      const now = new Date();
+
+      if (el) {
+        el.textContent = success
+          ? `Updated ${now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })}`
+          : `Update error at ${now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })}`;
+      }
+    }
+
+    function mapWeatherCodeToIcon(code) {
+      if (code === 0) return { icon: "☀️", label: "Clear" };
+      if (code === 1 || code === 2) return { icon: "🌤️", label: "Mostly clear" };
+      if (code === 3) return { icon: "☁️", label: "Cloudy" };
+      if (code >= 45 && code <= 48) return { icon: "🌫️", label: "Fog" };
+      if (code >= 51 && code <= 67) return { icon: "🌦️", label: "Rain" };
+      if (code >= 71 && code <= 77) return { icon: "❄️", label: "Snow" };
+      if (code >= 80 && code <= 82) return { icon: "🌧️", label: "Showers" };
+      if (code >= 95) return { icon: "⛈️", label: "Storm" };
+      return { icon: "🌡️", label: "Weather" };
+    }
+
+    async function fetchWeatherForecast() {
+      const url = new URL("https://api.open-meteo.com/v1/forecast");
+      url.searchParams.set("latitude", WEATHER_LAT);
+      url.searchParams.set("longitude", WEATHER_LON);
+      url.searchParams.set("hourly", "temperature_2m,wind_speed_10m,weathercode");
+      url.searchParams.set("forecast_days", "1");
+      url.searchParams.set("timezone", "auto");
+
+      const res = await fetch(url.toString(), { cache: "no-store" });
+      if (!res.ok) throw new Error(`Weather API error: ${res.status}`);
+      const data = await res.json();
+      return data;
+    }
+
+    function renderTramWeather(data) {
+      const grid = document.getElementById("tram-weather-grid");
+      if (!grid) return;
+      grid.innerHTML = "";
+
+      if (!data || !data.hourly || !Array.isArray(data.hourly.time)) {
+        const span = document.createElement("div");
+        span.textContent = "Weather data unavailable";
+        span.style.fontSize = "0.8rem";
+        span.style.color = "var(--text-muted)";
+        grid.appendChild(span);
+        return;
+      }
+
+      const { time, temperature_2m, wind_speed_10m, weathercode } = data.hourly;
+      const now = Date.now();
+      const forecasts = [];
+
+      for (let i = 0; i < time.length; i++) {
+        const t = Date.parse(time[i]);
+        if (isNaN(t) || t < now) continue;
+        forecasts.push({
+          when: new Date(t),
+          temp: temperature_2m?.[i],
+          wind: wind_speed_10m?.[i],
+          code: weathercode?.[i]
+        });
+      }
+
+      forecasts.sort((a, b) => a.when - b.when);
+      const used = forecasts.slice(0, WEATHER_HOURS_AHEAD);
+
+      if (used.length === 0) {
+        const span = document.createElement("div");
+        span.textContent = "No upcoming forecast hours";
+        span.style.fontSize = "0.8rem";
+        span.style.color = "var(--text-muted)";
+        grid.appendChild(span);
+        return;
+      }
+
+      for (const f of used) {
+        const tile = document.createElement("div");
+        tile.className = "tram-weather-tile";
+
+        const timeEl = document.createElement("div");
+        timeEl.className = "tram-weather-time";
+        timeEl.textContent = f.when.toLocaleTimeString([], { hour: "numeric" });
+
+        const main = document.createElement("div");
+        main.className = "tram-weather-main";
+
+        const iconEl = document.createElement("div");
+        iconEl.className = "tram-weather-icon";
+        const { icon, label } = mapWeatherCodeToIcon(f.code);
+        iconEl.textContent = icon;
+
+        const tempEl = document.createElement("div");
+        tempEl.className = "tram-weather-temp";
+        const tempRounded = typeof f.temp === "number" ? Math.round((f.temp * 9) / 5 + 32) : f.temp;
+        tempEl.textContent = tempRounded != null ? `${tempRounded}°` : "--°";
+
+        main.appendChild(iconEl);
+        main.appendChild(tempEl);
+
+        const windEl = document.createElement("div");
+        windEl.className = "tram-weather-wind";
+        const windRounded = typeof f.wind === "number" ? Math.round(f.wind * 0.621371) : f.wind;
+        windEl.textContent = windRounded != null ? `Wind ${windRounded} mph` : "Wind --";
+
+        const labelEl = document.createElement("div");
+        labelEl.className = "tram-weather-wind";
+        labelEl.textContent = label;
+
+        tile.appendChild(timeEl);
+        tile.appendChild(main);
+        tile.appendChild(windEl);
+        tile.appendChild(labelEl);
+
+        grid.appendChild(tile);
+      }
+    }
+
+    async function refreshWeather() {
+      const grid = document.getElementById("tram-weather-grid");
+      if (!grid) return;
+
+      try {
+        if (!ENABLE_WEATHER) {
+          grid.innerHTML = "";
+          const span = document.createElement("div");
+          span.textContent = "Weather preview disabled";
+          span.style.fontSize = "0.8rem";
+          span.style.color = "var(--text-muted)";
+          grid.appendChild(span);
+          return;
+        }
+
+        const data = await fetchWeatherForecast();
+        renderTramWeather(data);
+      } catch (err) {
+        console.error("Error fetching weather:", err);
+        grid.innerHTML = "";
+        const span = document.createElement("div");
+        span.textContent = "Weather data unavailable";
+        span.style.fontSize = "0.8rem";
+        span.style.color = "var(--text-muted)";
+        grid.appendChild(span);
+      }
+    }
+
+    async function fetchArrivalsForStops(locIDs) {
+      if (!USE_LIVE_TRIMET) return null;
+      if (!TRIMET_APP_ID) throw new Error("TriMet appID missing");
+
+      const ids = Array.from(new Set(locIDs));
+      const url = new URL("https://developer.trimet.org/ws/v2/arrivals");
+      url.searchParams.set("appID", TRIMET_APP_ID);
+      url.searchParams.set("locIDs", ids.join(","));
+      url.searchParams.set("json", "true");
+      url.searchParams.set("arrivals", "4");
+      url.searchParams.set("minutes", "60");
+
+      const res = await fetch(url.toString(), { cache: "no-store" });
+      if (!res.ok) throw new Error(`TriMet API error: ${res.status}`);
+      const data = await res.json();
+      return data.resultSet || data.result || data;
+    }
+
+    function normalizeTriMetArrivals(resultSet) {
+      const byStop = new Map();
+      const routeIndex = new Map();
+      const locationIndex = new Map();
+
+      if (Array.isArray(resultSet.route)) {
+        for (const r of resultSet.route) {
+          if (r.route != null) routeIndex.set(String(r.route), r);
+        }
+      }
+
+      if (Array.isArray(resultSet.location)) {
+        for (const loc of resultSet.location) {
+          const id = loc.id ?? loc.locid;
+          if (id != null) locationIndex.set(Number(id), loc);
+        }
+      }
+
+      const arrivals = Array.isArray(resultSet.arrival) ? resultSet.arrival : [];
+
+      for (const a of arrivals) {
+        const locid = Number(a.locid ?? a.locID ?? a.locationId);
+        if (!locid) continue;
+
+        const routeId = a.route != null ? String(a.route) : null;
+        const routeInfo = routeId ? routeIndex.get(routeId) : null;
+
+        const routeType = routeInfo?.type || null;
+        const routeSubType = routeInfo?.routeSubType || null;
+        const streetCarFlag = !!(a.streetCar || a.nextBusFeed);
+        const isMaxRouteNumber = routeId && MAX_ROUTE_NUMBERS.has(routeId);
+
+        let mode = "bus";
+        if (streetCarFlag || routeSubType === "Streetcar") {
+          mode = "streetcar";
+        } else if (routeSubType === "Aerial Tram") {
+          mode = "tram";
+        } else if (routeSubType === "Light Rail" || routeType === "R" || isMaxRouteNumber) {
+          mode = "max";
+        }
+
+        const whenMs = a.estimated ?? a.scheduled;
+        if (!whenMs) continue;
+
+        const loc = locationIndex.get(locid);
+        const headsign = a.fullSign || a.shortSign || loc?.desc || "";
+
+        const entry = {
+          stopId: locid,
+          line: routeId || a.blockID || "?",
+          headsign,
+          when: new Date(whenMs),
+          status: a.status || "",
+          mode,
+          routeType,
+          routeSubType,
+          streetCarFlag
+        };
+
+        if (!byStop.has(locid)) byStop.set(locid, []);
+        byStop.get(locid).push(entry);
+      }
+
+      for (const [, arr] of byStop.entries()) {
+        arr.sort((a, b) => a.when - b.when);
+      }
+
+      return byStop;
+    }
+
+    function resetSolariAnimation(rowEl) {
+      if (!rowEl) return;
+      rowEl.classList.remove("solari-animate");
+      void rowEl.offsetWidth;
+    }
+
+    function applySolariAnimation(rowEl, indexInPanel, kind) {
+      if (!rowEl) return;
+      resetSolariAnimation(rowEl);
+      const panelOffset = PANEL_ANIMATION_OFFSETS[kind] ?? 0;
+      const delay = panelOffset + indexInPanel * 0.08;
+      rowEl.style.setProperty("--solari-delay", `${delay.toFixed(2)}s`);
+      rowEl.classList.add("solari-animate");
+    }
+
+    function animatePanelHeader(kind) {
+      const header = document.querySelector(`[data-kind-header="${kind}"]`);
+      if (!header) return;
+      header.style.animationName = "none";
+      void header.offsetWidth;
+      const panelOffset = PANEL_ANIMATION_OFFSETS[kind] ?? 0;
+      header.style.animationDelay = `${panelOffset.toFixed(2)}s`;
+      header.style.animationDuration = "0.4s";
+      header.style.animationFillMode = "forwards";
+      header.style.animationTimingFunction = "ease-out";
+      header.style.animationName = "solariFlipHeader";
+    }
+
+    function buildSolariRowContent(entry) {
+      const colLine = document.createElement("div");
+      const chipLine = document.createElement("div");
+      chipLine.className = "chip-line";
+      chipLine.textContent = entry.line;
+      colLine.appendChild(chipLine);
+
+      const colDest = document.createElement("div");
+      colDest.textContent = entry.headsign;
+
+      const colTime = document.createElement("div");
+      colTime.className = "chip-time";
+
+      const mins = minutesUntil(entry.when);
+      const pill = classifyPill(mins);
+
+      const timeLabel = document.createElement("span");
+      const minsLabel = document.createElement("span");
+
+      timeLabel.textContent = formatTime(entry.when);
+      minsLabel.textContent = mins <= 0 ? "Now" : `${mins} min`;
+
+      colTime.appendChild(timeLabel);
+      colTime.appendChild(minsLabel);
+
+      if (pill) {
+        const pillSpan = document.createElement("span");
+        pillSpan.className = pillClass(pill);
+        pillSpan.textContent = pill.toUpperCase();
+        colTime.appendChild(pillSpan);
+      }
+
+      return { colLine, colDest, colTime };
+    }
+
+    function createSolariRow(entry, indexInPanel, kind) {
+      const row = document.createElement("div");
+      row.className = "row solari-row";
+
+      const flapTop = document.createElement("div");
+      flapTop.className = "solari-flap solari-flap-top";
+
+      const flapBottom = document.createElement("div");
+      flapBottom.className = "solari-flap solari-flap-bottom";
+
+      const content = document.createElement("div");
+      content.className = "solari-content";
+
+      const { colLine, colDest, colTime } = buildSolariRowContent(entry);
+      content.appendChild(colLine);
+      content.appendChild(colDest);
+      content.appendChild(colTime);
+
+      row.appendChild(content);
+      row.appendChild(flapTop);
+      row.appendChild(flapBottom);
+
+      applySolariAnimation(row, indexInPanel, kind);
+      return row;
+    }
+
+    function createPlaceholderRow(kind, indexInPanel) {
+      const row = document.createElement("div");
+      row.className = "row solari-row placeholder";
+
+      const flapTop = document.createElement("div");
+      flapTop.className = "solari-flap solari-flap-top";
+
+      const flapBottom = document.createElement("div");
+      flapBottom.className = "solari-flap solari-flap-bottom";
+
+      const content = document.createElement("div");
+      content.className = "solari-content";
+
+      const colLine = document.createElement("div");
+      const chipLine = document.createElement("div");
+      chipLine.className = "chip-line";
+      chipLine.textContent = "—";
+      colLine.appendChild(chipLine);
+
+      const colDest = document.createElement("div");
+      colDest.textContent = "";
+
+      const colTime = document.createElement("div");
+      colTime.className = "chip-time";
+      const timeLabel = document.createElement("span");
+      timeLabel.textContent = "—";
+      colTime.appendChild(timeLabel);
+
+      content.appendChild(colLine);
+      content.appendChild(colDest);
+      content.appendChild(colTime);
+
+      row.appendChild(content);
+      row.appendChild(flapTop);
+      row.appendChild(flapBottom);
+
+      applySolariAnimation(row, indexInPanel, kind);
+      return row;
+    }
+
+    function renderVehiclePanel(kind, byStopMap, config, filterFn) {
+      const rowsEl = document.getElementById(`rows-${kind}`);
+      const emptyEl = document.getElementById(`empty-${kind}`);
+      if (!rowsEl || !emptyEl) return;
+
+      rowsEl.innerHTML = "";
+
+      const entries = [];
+      for (const stop of config.stops) {
+        const arr = byStopMap?.get?.(stop.id) || [];
+        for (const a of arr) {
+          if (!filterFn || filterFn(a, stop, config)) {
+            entries.push({ ...a });
+          }
+        }
+      }
+
+      entries.sort((a, b) => a.when - b.when);
+      const used = entries.slice(0, MAX_ROWS_PER_PANEL);
+
+      emptyEl.hidden = used.length > 0;
+
+      used.forEach((e, idx) => {
+        rowsEl.appendChild(createSolariRow(e, idx, kind));
+      });
+
+      const placeholdersNeeded = Math.max(0, MAX_ROWS_PER_PANEL - used.length);
+      for (let i = 0; i < placeholdersNeeded; i++) {
+        rowsEl.appendChild(createPlaceholderRow(kind, used.length + i));
+      }
+
+      animatePanelHeader(kind);
+    }
+
+    function generateTramSchedule() {
+      const rowsEl = document.getElementById("rows-tram");
+      const emptyEl = document.getElementById("empty-tram");
+      if (!rowsEl || !emptyEl) return;
+
+      rowsEl.innerHTML = "";
+
+      const rows = [
+        {
+          label: "Weekdays",
+          service: "South Waterfront ⇄ OHSU",
+          details: "5:30 am – 9:30 pm · Every 5–10 min"
+        },
+        {
+          label: "Saturday",
+          service: "South Waterfront ⇄ OHSU",
+          details: "9:00 am – 5:00 pm · Every ~5 min"
+        },
+        {
+          label: "Sunday / Holidays",
+          service: "No regular service",
+          details: "Check GoByTram.com for exceptions"
+        }
+      ];
+
+      rows.forEach((r, idx) => {
+        const entry = {
+          line: r.label,
+          headsign: r.service,
+          when: new Date(Date.now() + (idx + 1) * 60 * 60 * 1000)
+        };
+        const row = createSolariRow(entry, idx, "tram");
+
+        const content = row.querySelector(".solari-content");
+        if (content && content.children[2]) {
+          const timeCol = content.children[2];
+          timeCol.innerHTML = "";
+          const span = document.createElement("span");
+          span.textContent = r.details;
+          timeCol.appendChild(span);
+        }
+
+        rowsEl.appendChild(row);
+      });
+
+      const currentCount = rowsEl.childElementCount;
+      const placeholdersNeeded = Math.max(0, MAX_ROWS_PER_PANEL - currentCount);
+      for (let i = 0; i < placeholdersNeeded; i++) {
+        rowsEl.appendChild(createPlaceholderRow("tram", currentCount + i));
+      }
+
+      emptyEl.hidden = true;
+      emptyEl.style.display = "none";
+      animatePanelHeader("tram");
+    }
+
+    function setVisiblePair(pairIndex) {
+      currentPair = pairIndex;
+      const panels = document.querySelectorAll(".panel");
+      panels.forEach((p) => {
+        const pair = Number(p.getAttribute("data-pair"));
+        if (pair === currentPair) {
+          p.classList.remove("panel-hidden");
+        } else {
+          p.classList.add("panel-hidden");
+        }
+      });
+
+      const label = currentPair === 0 ? "Bus & MAX" : "Tram & Streetcar";
+      const modeLabel = document.getElementById("mode-label");
+      if (modeLabel) {
+        modeLabel.textContent = `Live Board · ${label}`;
+      }
+
+      const hint = document.getElementById("slide-timer");
+      if (hint) {
+        hint.textContent = `Solari flip cycling Bus/MAX ↔ Tram/Streetcar every ${REFRESH_SECONDS}s · Showing ${label}`;
+      }
+    }
+
+    function runSanityTests() {
+      const streetcarFilter = (a) =>
+        a.mode === "streetcar" || a.routeSubType === "Streetcar" || a.streetCarFlag;
+      const fakeStreetcar = { mode: "streetcar", routeSubType: "Streetcar", streetCarFlag: true };
+      const fakeBus = { mode: "bus", routeSubType: "Bus", streetCarFlag: false };
+
+      console.assert(streetcarFilter(fakeStreetcar) === true, "Streetcar filter should accept streetcar entries");
+      console.assert(streetcarFilter(fakeBus) === false, "Streetcar filter should reject bus entries");
+
+      console.assert(classifyPill(-1) === "now", "classifyPill(-1) should be 'now'");
+      console.assert(classifyPill(2) === "soon", "classifyPill(2) should be 'soon'");
+      console.assert(classifyPill(25) === "later", "classifyPill(25) should be 'later'");
+
+      const now = new Date();
+      const inFive = new Date(now.getTime() + 5 * 60000);
+      const mins = minutesUntil(inFive);
+      console.assert(Math.abs(mins - 5) <= 1, "minutesUntil should be ~5 for +5min");
+
+      const sunny = mapWeatherCodeToIcon(0);
+      console.assert(sunny.icon === "☀️" && sunny.label === "Clear", "Weather code 0 should map to Clear/☀️");
+    }
+
+    async function refreshBoard() {
+      const allLocIds = [
+        ...CONFIG.bus.stops.map((s) => s.id),
+        ...CONFIG.max.stops.map((s) => s.id),
+        ...CONFIG.streetcar.stops.map((s) => s.id)
+      ];
+
+      try {
+        const resultSet = await fetchArrivalsForStops(allLocIds);
+        const byStop = resultSet ? normalizeTriMetArrivals(resultSet) : new Map();
+
+        const streetcarFilter = (a) =>
+          a.mode === "streetcar" || a.routeSubType === "Streetcar" || a.streetCarFlag;
+        const maxFilter = (a) => {
+          const line = String(a.line || "");
+          const isMaxRoute = MAX_ROUTE_NUMBERS.has(line);
+          const isRail = a.routeType === "R" || a.routeSubType === "Light Rail";
+          return a.mode === "max" || isRail || isMaxRoute;
+        };
+
+        renderVehiclePanel("bus", byStop, CONFIG.bus, (a) => a.mode === "bus");
+        renderVehiclePanel("max", byStop, CONFIG.max, maxFilter);
+        renderVehiclePanel("streetcar", byStop, CONFIG.streetcar, streetcarFilter);
+        generateTramSchedule();
+
+        updateLastUpdated(true);
+      } catch (err) {
+        console.error("Error refreshing board:", err);
+
+        // Fallback: render placeholder rows + tram schedule so the board is never blank
+        const emptyMap = new Map();
+        const streetcarFilter = (a) =>
+          a.mode === "streetcar" || a.routeSubType === "Streetcar" || a.streetCarFlag;
+        const maxFilter = (a) => {
+          const line = String(a.line || "");
+          const isMaxRoute = MAX_ROUTE_NUMBERS.has(line);
+          const isRail = a.routeType === "R" || a.routeSubType === "Light Rail";
+          return a.mode === "max" || isRail || isMaxRoute;
+        };
+
+        renderVehiclePanel("bus", emptyMap, CONFIG.bus, (a) => a.mode === "bus");
+        renderVehiclePanel("max", emptyMap, CONFIG.max, maxFilter);
+        renderVehiclePanel("streetcar", emptyMap, CONFIG.streetcar, streetcarFilter);
+        generateTramSchedule();
+
+        updateLastUpdated(false);
+      }
+    }
+
+    async function init() {
+      await loadConfig();
+      
+      // Override CONFIG with loaded configuration if available
+      if (BUILDING_CONFIG) {
+        Object.assign(CONFIG, buildConfigFromJSON(BUILDING_CONFIG));
+        
+        // Show alert if active
+        if (BUILDING_CONFIG.alerts && BUILDING_CONFIG.alerts.active) {
+          showAlert(BUILDING_CONFIG.alerts.message);
+        }
+      }
+      
+      runSanityTests();
+      updateClock();
+      setInterval(updateClock, 1000);
+
+      setVisiblePair(0);
+      refreshBoard();
+      refreshWeather();
+
+      setInterval(() => {
+        // toggle modality pair then refresh data with fresh Solari flip
+        const nextPair = currentPair === 0 ? 1 : 0;
+        setVisiblePair(nextPair);
+        refreshBoard();
+      }, REFRESH_SECONDS * 1000);
+
+      setInterval(refreshWeather, WEATHER_REFRESH_MINUTES * 60 * 1000);
+    }
+
+    window.addEventListener("load", init);
+  </script>
+</body>
+</html>

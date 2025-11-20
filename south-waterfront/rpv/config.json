@@ -1,0 +1,29 @@
+{
+  "building_id": "rpv",
+  "display_name": "Rood Family Pavilion",
+  "campus_region": "South Waterfront",
+  "primary_stops": [
+    {
+      "id": 12760,
+      "label": "Streetcar · S Moody & Gibbs South",
+      "type": "streetcar",
+      "direction": "southbound"
+    }
+  ],
+  "secondary_stops": [
+    {
+      "id": 12761,
+      "label": "Streetcar · S Moody & Gibbs North",
+      "type": "streetcar",
+      "direction": "northbound"
+    }
+  ],
+  "alerts": {
+    "active": false,
+    "message": ""
+  },
+  "features": {
+    "show_tram_status": false,
+    "accessibility_highlight": true
+  }
+}

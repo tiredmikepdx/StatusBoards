@@ -1,0 +1,22 @@
+{
+  "building_id": "casey-eye",
+  "display_name": "Casey Eye Institute",
+  "campus_region": "Marquam Hill",
+  "primary_stops": [
+    {
+      "id": 11010,
+      "label": "SW Terwilliger & Campus",
+      "type": "bus",
+      "lines": ["8", "43", "56"]
+    }
+  ],
+  "secondary_stops": [],
+  "alerts": {
+    "active": true,
+    "message": "NOTICE: Campus Dr stops are closed due to construction. Displaying arrivals for SW Terwilliger & Campus."
+  },
+  "features": {
+    "show_tram_status": false,
+    "accessibility_highlight": true
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "building_id": "rlsb",
+  "display_name": "Robertson Life Sciences Building",
+  "campus_region": "South Waterfront",
+  "primary_stops": [
+    {
+      "id": 13728,
+      "label": "MAX Orange · To City Center / Expo",
+      "type": "max",
+      "direction": "westbound"
+    },
+    {
+      "id": 13711,
+      "label": "MAX Orange · To Milwaukie",
+      "type": "max",
+      "direction": "eastbound"
+    }
+  ],
+  "secondary_stops": [
+    {
+      "id": 13601,
+      "label": "Streetcar · S Moody & Meade South",
+      "type": "streetcar",
+      "direction": "southbound"
+    }
+  ],
+  "alerts": {
+    "active": false,
+    "message": ""
+  },
+  "features": {
+    "show_tram_status": false,
+    "accessibility_highlight": false
+  }
+}
