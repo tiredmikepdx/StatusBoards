@@ -338,10 +338,9 @@
       background: transparent;
       border: none;
       padding: 0;
-      height: var(--row-height);
       min-height: var(--row-height);
       transform-style: preserve-3d;
-      overflow: hidden;
+      overflow: visible;
     }
 
     .solari-row {
@@ -349,12 +348,11 @@
     }
 
     .solari-content {
-      position: absolute;
-      inset: 0;
-      padding: 0.35rem 0.95rem;
+      position: relative;
+      padding: 0.5rem 0.95rem;
       display: grid;
       grid-template-columns: minmax(0, 0.33fr) minmax(0, 0.7fr) minmax(0, 0.55fr);
-      align-items: stretch;
+      align-items: start;
       gap: 0.8rem;
       font-size: inherit;
       z-index: 1;
@@ -362,6 +360,7 @@
       border: 1px solid rgba(55, 65, 81, 0.9);
       box-shadow: 0 10px 26px rgba(0, 0, 0, 0.5);
       border-radius: 0.95rem;
+      min-height: var(--row-height);
     }
 
     .solari-content::after {
@@ -384,23 +383,21 @@
     }
 
     .solari-content > div:nth-child(2) {
-      overflow: hidden;
-      text-overflow: ellipsis;
       white-space: normal;
-      line-height: 1.1;
-      overflow-wrap: anywhere;
+      line-height: 1.2;
+      overflow-wrap: break-word;
+      word-break: break-word;
     }
 
     .solari-content > div:nth-child(3) {
-      overflow: hidden;
-      text-overflow: ellipsis;
       white-space: normal;
       justify-content: flex-end;
       align-items: flex-end;
       text-align: right;
       flex-direction: column;
       gap: 0.2rem;
-      overflow-wrap: anywhere;
+      overflow-wrap: break-word;
+      word-break: break-word;
     }
 
     .solari-flap {
