@@ -19,6 +19,7 @@ Each building has its own directory containing:
 ```
 /
 ├── index.html                    # Main navigation hub
+├── portrait/                     # Shared portrait-mode board (requires ?board=<path>)
 ├── waterfront/                   # Legacy waterfront display
 ├── south-waterfront/
 │   ├── rlsb/                    # Robertson Life Sciences Building
@@ -33,6 +34,10 @@ Each building has its own directory containing:
     ├── kohler/                  # Kohler Pavilion
     └── va-medical/              # VA Medical Center
 ```
+
+### Portrait Boards
+
+Every building now has a portrait-mode display that shows one modality at a time to reduce crowding. Open them from the main selector or link directly to `portrait/?board=<building-path>`, for example `portrait/?board=marquam-hill/hospital`.
 
 ## Building Locations
 

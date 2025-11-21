@@ -100,6 +100,38 @@
       gap: 1rem;
     }
 
+    .banner {
+      border-radius: 1rem;
+      padding: 1.1rem 1.25rem;
+      border: 1px solid var(--border);
+      background: linear-gradient(120deg, rgba(56, 189, 248, 0.08), rgba(2, 6, 23, 0.9));
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .banner-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .banner-subtitle {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+      word-break: break-all;
+    }
+
+    .banner-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+
     .card-label {
       font-size: 0.9rem;
       color: var(--text-muted);
@@ -150,6 +182,12 @@
     .btn:disabled {
       opacity: 0.4;
       cursor: not-allowed;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--text-main);
+      border: 1px solid var(--border);
     }
 
     .hint {
@@ -249,6 +287,17 @@
       </div>
     </div>
 
+    <div class="banner" id="resume-banner" hidden>
+      <div>
+        <div class="banner-title">Resume saved display</div>
+        <div class="banner-subtitle" id="resume-subtitle"></div>
+      </div>
+      <div class="banner-actions">
+        <button class="btn" id="resume-btn">Open saved</button>
+        <button class="btn btn-secondary" id="clear-btn">Choose another</button>
+      </div>
+    </div>
+
     <div class="card">
       <div class="card-label">Quick Access</div>
       <div class="selector-row">
@@ -311,7 +360,44 @@
         notes: "MAX Orange Line + Streetcar · 2730 S Moody Ave",
         campus: "South Waterfront"
       },
-      
+
+      // South Waterfront Portrait boards
+      {
+        id: "rlsb-portrait",
+        label: "Robertson Life Sciences (Portrait)",
+        path: "portrait/?board=south-waterfront/rlsb",
+        notes: "Portrait display · Single-modality rotation",
+        campus: "South Waterfront"
+      },
+      {
+        id: "kcrb-portrait",
+        label: "Knight Cancer Research (Portrait)",
+        path: "portrait/?board=south-waterfront/kcrb",
+        notes: "Portrait display · Single-modality rotation",
+        campus: "South Waterfront"
+      },
+      {
+        id: "chh-portrait",
+        label: "Center for Health & Healing (Portrait)",
+        path: "portrait/?board=south-waterfront/chh",
+        notes: "Portrait display · Single-modality rotation",
+        campus: "South Waterfront"
+      },
+      {
+        id: "rpv-portrait",
+        label: "Rood Family Pavilion (Portrait)",
+        path: "portrait/?board=south-waterfront/rpv",
+        notes: "Portrait display · Single-modality rotation",
+        campus: "South Waterfront"
+      },
+      {
+        id: "dentistry-portrait",
+        label: "School of Dentistry (Portrait)",
+        path: "portrait/?board=south-waterfront/dentistry",
+        notes: "Portrait display · Single-modality rotation",
+        campus: "South Waterfront"
+      },
+
       // Marquam Hill Campus
       {
         id: "hospital",
@@ -349,10 +435,49 @@
         path: "marquam-hill/va-medical/",
         notes: "Bus Lines 8, 56 · 3710 SW US Veterans Hospital Rd",
         campus: "Marquam Hill"
+      },
+
+      // Marquam Hill Portrait boards
+      {
+        id: "hospital-portrait",
+        label: "OHSU Hospital (Portrait)",
+        path: "portrait/?board=marquam-hill/hospital",
+        notes: "Portrait display · Single-modality rotation",
+        campus: "Marquam Hill"
+      },
+      {
+        id: "doernbecher-portrait",
+        label: "Doernbecher Children's (Portrait)",
+        path: "portrait/?board=marquam-hill/doernbecher",
+        notes: "Portrait display · Single-modality rotation",
+        campus: "Marquam Hill",
+        alert: true
+      },
+      {
+        id: "casey-eye-portrait",
+        label: "Casey Eye Institute (Portrait)",
+        path: "portrait/?board=marquam-hill/casey-eye",
+        notes: "Portrait display · Single-modality rotation",
+        campus: "Marquam Hill",
+        alert: true
+      },
+      {
+        id: "kohler-portrait",
+        label: "Kohler Pavilion (Portrait)",
+        path: "portrait/?board=marquam-hill/kohler",
+        notes: "Portrait display · Single-modality rotation",
+        campus: "Marquam Hill"
+      },
+      {
+        id: "va-medical-portrait",
+        label: "VA Medical Center (Portrait)",
+        path: "portrait/?board=marquam-hill/va-medical",
+        notes: "Portrait display · Single-modality rotation",
+        campus: "Marquam Hill"
       }
     ];
 
-    function initSelector() {
+    function initSelector(savedPath) {
       const select = document.getElementById("board-select");
       const campusGrid = document.getElementById("campus-grid");
       const btn = document.getElementById("open-btn");
@@ -441,6 +566,13 @@
         }
       });
 
+      if (savedPath) {
+        const url = new URL(savedPath, base).toString();
+        select.value = savedPath;
+        btn.disabled = false;
+        urlHint.textContent = `Saved display selected: ${url}`;
+      }
+
       btn.addEventListener("click", () => {
         const value = select.value;
         if (!value) return;
@@ -448,25 +580,52 @@
       });
     }
 
-    // Check for saved display and auto-redirect (unless ?setup=true)
+    // Surface saved display with option to clear (unless ?setup=true)
     function checkSavedDisplay() {
       const params = new URLSearchParams(window.location.search);
+      const banner = document.getElementById('resume-banner');
+      const subtitle = document.getElementById('resume-subtitle');
+      const resumeBtn = document.getElementById('resume-btn');
+      const clearBtn = document.getElementById('clear-btn');
+
       if (params.get('setup') === 'true') {
-        // Clear saved display if explicitly in setup mode
         localStorage.removeItem('statusboards_display');
-        return false;
+        if (banner) banner.hidden = true;
+        return {};
       }
 
-      const savedDisplay = localStorage.getItem('statusboards_display');
-      if (savedDisplay) {
-        // Verify it's a valid path
-        const valid = BOARDS.some(b => b.path === savedDisplay);
-        if (valid) {
-          window.location.href = savedDisplay;
-          return true;
-        }
+      const savedPath = localStorage.getItem('statusboards_display');
+      const savedBoard = BOARDS.find(b => b.path === savedPath);
+
+      if (savedPath && !savedBoard) {
+        localStorage.removeItem('statusboards_display');
       }
-      return false;
+
+      if (savedBoard && banner && subtitle && resumeBtn && clearBtn) {
+        const url = new URL(savedBoard.path, window.location.href).toString();
+        subtitle.textContent = `${savedBoard.label} — ${url}`;
+        banner.hidden = false;
+
+        resumeBtn.onclick = () => saveAndNavigate(savedBoard.path);
+        clearBtn.onclick = () => {
+          localStorage.removeItem('statusboards_display');
+          banner.hidden = true;
+
+          const selector = document.getElementById('board-select');
+          const hint = document.getElementById('url-hint');
+          const openBtn = document.getElementById('open-btn');
+
+          if (selector && hint && openBtn) {
+            selector.value = '';
+            openBtn.disabled = true;
+            hint.textContent = "Select a board above or click a building below.";
+          }
+        };
+
+        return { savedPath: savedBoard.path };
+      }
+
+      return {};
     }
 
     // Save display selection when navigating
@@ -476,9 +635,8 @@
     }
 
     window.addEventListener("load", () => {
-      if (!checkSavedDisplay()) {
-        initSelector();
-      }
+      const { savedPath } = checkSavedDisplay();
+      initSelector(savedPath);
     });
   </script>
 </body>
