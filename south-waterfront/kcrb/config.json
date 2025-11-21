@@ -22,6 +22,24 @@
       "label": "Streetcar · S Moody & Meade South",
       "type": "streetcar",
       "direction": "southbound"
+    },
+    {
+      "id": 13600,
+      "label": "Streetcar · S Moody & Meade North",
+      "type": "streetcar",
+      "direction": "northbound"
+    },
+    {
+      "id": 13732,
+      "label": "Bus · SW River Pkwy & Moody",
+      "type": "bus",
+      "lines": ["35", "36"]
+    },
+    {
+      "id": 13733,
+      "label": "Bus · SW River Pkwy & Moody",
+      "type": "bus",
+      "lines": ["35", "36"]
     }
   ],
   "alerts": {
