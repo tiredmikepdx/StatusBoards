@@ -397,10 +397,8 @@
           const link = document.createElement("a");
           link.className = "building-link";
           link.href = board.path;
-          link.addEventListener("click", (e) => {
-            e.preventDefault();
-            saveAndNavigate(board.path);
-          });
+          // Allow normal navigation without localStorage persistence
+          // Users can use ?lock=true on board URLs for kiosk mode
           
           const name = document.createElement("div");
           name.className = "building-name";
@@ -444,41 +442,12 @@
       btn.addEventListener("click", () => {
         const value = select.value;
         if (!value) return;
-        saveAndNavigate(value);
+        window.location.href = value;
       });
     }
 
-    // Check for saved display and auto-redirect (unless ?setup=true)
-    function checkSavedDisplay() {
-      const params = new URLSearchParams(window.location.search);
-      if (params.get('setup') === 'true') {
-        // Clear saved display if explicitly in setup mode
-        localStorage.removeItem('statusboards_display');
-        return false;
-      }
-
-      const savedDisplay = localStorage.getItem('statusboards_display');
-      if (savedDisplay) {
-        // Verify it's a valid path
-        const valid = BOARDS.some(b => b.path === savedDisplay);
-        if (valid) {
-          window.location.href = savedDisplay;
-          return true;
-        }
-      }
-      return false;
-    }
-
-    // Save display selection when navigating
-    function saveAndNavigate(path) {
-      localStorage.setItem('statusboards_display', path);
-      window.location.href = path;
-    }
-
     window.addEventListener("load", () => {
-      if (!checkSavedDisplay()) {
-        initSelector();
-      }
+      initSelector();
     });
   </script>
 </body>
