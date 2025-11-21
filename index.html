@@ -448,12 +448,19 @@
       });
     }
 
-    // Check for saved display and auto-redirect (unless ?setup=true)
+    // Check for saved display and auto-redirect (unless ?setup=true or back navigation)
     function checkSavedDisplay() {
       const params = new URLSearchParams(window.location.search);
       if (params.get('setup') === 'true') {
         // Clear saved display if explicitly in setup mode
         localStorage.removeItem('statusboards_display');
+        return false;
+      }
+
+      // Don't auto-redirect if user navigated back (back/forward button)
+      const navEntries = performance.getEntriesByType('navigation');
+      const navigationType = navEntries.length > 0 ? navEntries[0].type : 'navigate';
+      if (navigationType === 'back_forward') {
         return false;
       }
 
