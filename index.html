@@ -228,6 +228,32 @@
       line-height: 1.4;
     }
 
+    .orientation-buttons {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+
+    .orientation-btn {
+      padding: 0.3rem 0.6rem;
+      border-radius: 0.35rem;
+      border: 1px solid var(--border);
+      background: rgba(15,23,42,0.8);
+      color: var(--text-muted);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+
+    .orientation-btn:hover {
+      background: rgba(56,189,248,0.2);
+      border-color: var(--accent);
+      color: var(--text-main);
+    }
+
     @media (max-width: 640px) {
       .shell { padding: 1.5rem; }
     }
@@ -271,15 +297,17 @@
         id: "waterfront-legacy",
         label: "South Waterfront (Legacy)",
         path: "waterfront/",
+        portraitPath: "waterfront/portrait.html",
         notes: "Original waterfront display · live TriMet arrivals & OHSU Tram schedule.",
         campus: "Legacy"
       },
-      
+
       // South Waterfront Campus
       {
         id: "rlsb",
         label: "Robertson Life Sciences Building",
         path: "south-waterfront/rlsb/",
+        portraitPath: "south-waterfront/rlsb/portrait.html",
         notes: "MAX Orange Line (City Center & Milwaukie) + Streetcar · 2730 S Moody Ave",
         campus: "South Waterfront"
       },
@@ -287,6 +315,7 @@
         id: "kcrb",
         label: "Knight Cancer Research Building",
         path: "south-waterfront/kcrb/",
+        portraitPath: "south-waterfront/kcrb/portrait.html",
         notes: "MAX Orange Line (City Center & Milwaukie) + Streetcar · 2720 S Moody Ave",
         campus: "South Waterfront"
       },
@@ -294,6 +323,7 @@
         id: "chh",
         label: "Center for Health & Healing",
         path: "south-waterfront/chh/",
+        portraitPath: "south-waterfront/chh/portrait.html",
         notes: "Streetcar + Bus Lines 35, 40 + Aerial Tram · 3303 S Bond Ave",
         campus: "South Waterfront"
       },
@@ -301,6 +331,7 @@
         id: "rpv",
         label: "Rood Family Pavilion",
         path: "south-waterfront/rpv/",
+        portraitPath: "south-waterfront/rpv/portrait.html",
         notes: "Streetcar (accessibility priority enabled) · 3410 S Bond Ave",
         campus: "South Waterfront"
       },
@@ -308,44 +339,8 @@
         id: "dentistry",
         label: "School of Dentistry",
         path: "south-waterfront/dentistry/",
+        portraitPath: "south-waterfront/dentistry/portrait.html",
         notes: "MAX Orange Line + Streetcar · 2730 S Moody Ave",
-        campus: "South Waterfront"
-      },
-
-      // South Waterfront Portrait boards
-      {
-        id: "rlsb-portrait",
-        label: "Robertson Life Sciences (Portrait)",
-        path: "portrait/?board=south-waterfront/rlsb",
-        notes: "Portrait display · Single-modality rotation",
-        campus: "South Waterfront"
-      },
-      {
-        id: "kcrb-portrait",
-        label: "Knight Cancer Research (Portrait)",
-        path: "portrait/?board=south-waterfront/kcrb",
-        notes: "Portrait display · Single-modality rotation",
-        campus: "South Waterfront"
-      },
-      {
-        id: "chh-portrait",
-        label: "Center for Health & Healing (Portrait)",
-        path: "portrait/?board=south-waterfront/chh",
-        notes: "Portrait display · Single-modality rotation",
-        campus: "South Waterfront"
-      },
-      {
-        id: "rpv-portrait",
-        label: "Rood Family Pavilion (Portrait)",
-        path: "portrait/?board=south-waterfront/rpv",
-        notes: "Portrait display · Single-modality rotation",
-        campus: "South Waterfront"
-      },
-      {
-        id: "dentistry-portrait",
-        label: "School of Dentistry (Portrait)",
-        path: "portrait/?board=south-waterfront/dentistry",
-        notes: "Portrait display · Single-modality rotation",
         campus: "South Waterfront"
       },
 
@@ -354,6 +349,7 @@
         id: "hospital",
         label: "OHSU Hospital",
         path: "marquam-hill/hospital/",
+        portraitPath: "marquam-hill/hospital/portrait.html",
         notes: "Bus Lines 8, 43, 56 + Aerial Tram · 3181 SW Sam Jackson Park Rd",
         campus: "Marquam Hill"
       },
@@ -361,6 +357,7 @@
         id: "doernbecher",
         label: "Doernbecher Children's Hospital",
         path: "marquam-hill/doernbecher/",
+        portraitPath: "marquam-hill/doernbecher/portrait.html",
         notes: "⚠️ Construction Alert · Using alternate stop at SW Terwilliger · 700 SW Campus Dr",
         campus: "Marquam Hill",
         alert: true
@@ -369,6 +366,7 @@
         id: "casey-eye",
         label: "Casey Eye Institute",
         path: "marquam-hill/casey-eye/",
+        portraitPath: "marquam-hill/casey-eye/portrait.html",
         notes: "⚠️ Construction Alert · Using alternate stop at SW Terwilliger · 515 SW Campus Dr",
         campus: "Marquam Hill",
         alert: true
@@ -377,6 +375,7 @@
         id: "kohler",
         label: "Kohler Pavilion",
         path: "marquam-hill/kohler/",
+        portraitPath: "marquam-hill/kohler/portrait.html",
         notes: "Aerial Tram (priority) + Bus Lines 8, 43, 56 · 808 SW Campus Dr",
         campus: "Marquam Hill"
       },
@@ -384,6 +383,7 @@
         id: "va-medical",
         label: "VA Medical Center",
         path: "marquam-hill/va-medical/",
+        portraitPath: "marquam-hill/va-medical/portrait.html",
         notes: "Bus Lines 8, 56 · 3710 SW US Veterans Hospital Rd",
         campus: "Marquam Hill"
       },
@@ -434,12 +434,17 @@
       const btn = document.getElementById("open-btn");
       const urlHint = document.getElementById("url-hint");
 
-      // populate dropdown
+      // populate dropdown with both landscape and portrait options
       for (const board of BOARDS) {
-        const opt = document.createElement("option");
-        opt.value = board.path;
-        opt.textContent = board.label;
-        select.appendChild(opt);
+        const optLandscape = document.createElement("option");
+        optLandscape.value = board.path;
+        optLandscape.textContent = `${board.label} (Landscape)`;
+        select.appendChild(optLandscape);
+
+        const optPortrait = document.createElement("option");
+        optPortrait.value = board.portraitPath;
+        optPortrait.textContent = `${board.label} (Portrait)`;
+        select.appendChild(optPortrait);
       }
 
       // Group boards by campus
@@ -470,36 +475,57 @@
         section.appendChild(title);
         
         for (const board of campuses[campus]) {
-          const link = document.createElement("a");
-          link.className = "building-link";
-          link.href = board.path;
-          link.addEventListener("click", (e) => {
-            e.preventDefault();
-            saveAndNavigate(board.path);
-          });
-          
+          const container = document.createElement("div");
+          container.className = "building-link";
+
           const name = document.createElement("div");
           name.className = "building-name";
-          
+
           if (board.alert) {
             const icon = document.createElement("span");
             icon.className = "alert-icon";
             icon.textContent = "⚠️";
             name.appendChild(icon);
           }
-          
+
           const nameText = document.createTextNode(board.label);
           name.appendChild(nameText);
-          link.appendChild(name);
-          
+          container.appendChild(name);
+
           if (board.notes) {
             const notes = document.createElement("div");
             notes.className = "building-notes";
             notes.textContent = board.notes;
-            link.appendChild(notes);
+            container.appendChild(notes);
           }
-          
-          section.appendChild(link);
+
+          // Add orientation buttons
+          const buttons = document.createElement("div");
+          buttons.className = "orientation-buttons";
+
+          const landscapeBtn = document.createElement("a");
+          landscapeBtn.className = "orientation-btn";
+          landscapeBtn.href = board.path;
+          landscapeBtn.textContent = "Landscape";
+          landscapeBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            navigateToBoard(board.path);
+          });
+
+          const portraitBtn = document.createElement("a");
+          portraitBtn.className = "orientation-btn";
+          portraitBtn.href = board.portraitPath;
+          portraitBtn.textContent = "Portrait";
+          portraitBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            navigateToBoard(board.portraitPath);
+          });
+
+          buttons.appendChild(landscapeBtn);
+          buttons.appendChild(portraitBtn);
+          container.appendChild(buttons);
+
+          section.appendChild(container);
         }
         
         campusGrid.appendChild(section);
@@ -520,41 +546,16 @@
       btn.addEventListener("click", () => {
         const value = select.value;
         if (!value) return;
-        saveAndNavigate(value);
+        navigateToBoard(value);
       });
     }
 
-    // Check for saved display and auto-redirect (unless ?setup=true)
-    function checkSavedDisplay() {
-      const params = new URLSearchParams(window.location.search);
-      if (params.get('setup') === 'true') {
-        // Clear saved display if explicitly in setup mode
-        localStorage.removeItem('statusboards_display');
-        return false;
-      }
-
-      const savedDisplay = localStorage.getItem('statusboards_display');
-      if (savedDisplay) {
-        // Verify it's a valid path
-        const valid = BOARDS.some(b => b.path === savedDisplay);
-        if (valid) {
-          window.location.href = savedDisplay;
-          return true;
-        }
-      }
-      return false;
-    }
-
-    // Save display selection when navigating
-    function saveAndNavigate(path) {
-      localStorage.setItem('statusboards_display', path);
+    function navigateToBoard(path) {
       window.location.href = path;
     }
 
     window.addEventListener("load", () => {
-      if (!checkSavedDisplay()) {
-        initSelector();
-      }
+      initSelector();
     });
   </script>
 </body>
