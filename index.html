@@ -22,21 +22,12 @@
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background: radial-gradient(circle at top, #1f2937, #020617 45%);
       color: var(--text-main);
-      display: flex;
-      align-items: center;
-      justify-content: center;
       padding: 1.5rem;
     }
 
     .shell {
-      max-width: 720px;
-      width: 100%;
-      border-radius: 1.5rem;
-      padding: 2rem 2.25rem;
-      background: radial-gradient(circle at top left, rgba(148,163,184,0.18), transparent 60%),
-                  radial-gradient(circle at bottom right, rgba(15,23,42,0.95), #020617);
-      border: 1px solid var(--border);
-      box-shadow: 0 24px 60px rgba(0,0,0,0.75);
+      max-width: 1200px;
+      margin: 0 auto;
       display: flex;
       flex-direction: column;
       gap: 1.5rem;
@@ -125,7 +116,6 @@
       font-size: 0.95rem;
       outline: none;
       appearance: none;
-      position: relative;
     }
 
     select:focus {
@@ -157,60 +147,56 @@
       color: var(--text-muted);
     }
 
-    .list {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      line-height: 1.5;
-    }
-
-    .list span {
-      display: block;
-    }
-
-    .campus-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 1.5rem;
-      margin-top: 1rem;
-    }
-
-    .campus-section {
-      border-radius: 1rem;
+    .facility-group {
+      border-radius: 1.25rem;
       padding: 1.25rem;
       border: 1px solid var(--border);
-      background: rgba(15,23,42,0.94);
+      background: radial-gradient(circle at top left, rgba(148,163,184,0.1), transparent 60%),
+                  rgba(15,23,42,0.94);
     }
 
-    .campus-title {
-      font-size: 1rem;
+    .facility-title {
+      font-size: 1.1rem;
       font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.1em;
+      letter-spacing: 0.12em;
       color: var(--accent);
       margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
     }
 
-    .building-link {
-      display: block;
-      padding: 0.65rem 0.85rem;
-      margin-bottom: 0.5rem;
-      border-radius: 0.5rem;
-      background: rgba(15,23,42,0.6);
+    .display-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+    }
+
+    @media (max-width: 700px) {
+      .display-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .display-card {
+      border-radius: 0.75rem;
+      padding: 1rem;
+      background: rgba(2,6,23,0.8);
       border: 1px solid var(--border);
-      color: var(--text-main);
-      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
       transition: all 0.2s ease;
-      font-size: 0.9rem;
     }
 
-    .building-link:hover {
-      background: rgba(56,189,248,0.15);
+    .display-card:hover {
       border-color: var(--accent);
-      transform: translateX(3px);
+      background: rgba(56,189,248,0.08);
     }
 
-    .building-name {
+    .display-name {
       font-weight: 600;
+      font-size: 0.95rem;
       display: flex;
       align-items: center;
       gap: 0.5rem;
@@ -218,13 +204,11 @@
 
     .alert-icon {
       color: #f97316;
-      font-size: 1.1em;
     }
 
-    .building-notes {
+    .display-notes {
       font-size: 0.75rem;
       color: var(--text-muted);
-      margin-top: 0.25rem;
       line-height: 1.4;
     }
 
@@ -235,12 +219,12 @@
     }
 
     .orientation-btn {
-      padding: 0.3rem 0.6rem;
-      border-radius: 0.35rem;
+      padding: 0.4rem 0.75rem;
+      border-radius: 0.4rem;
       border: 1px solid var(--border);
-      background: rgba(15,23,42,0.8);
+      background: rgba(15,23,42,0.9);
       color: var(--text-muted);
-      font-size: 0.7rem;
+      font-size: 0.75rem;
       text-transform: uppercase;
       letter-spacing: 0.1em;
       cursor: pointer;
@@ -252,10 +236,6 @@
       background: rgba(56,189,248,0.2);
       border-color: var(--accent);
       color: var(--text-main);
-    }
-
-    @media (max-width: 640px) {
-      .shell { padding: 1.5rem; }
     }
   </style>
 </head>
@@ -279,36 +259,25 @@
       <div class="card-label">Quick Access</div>
       <div class="selector-row">
         <select id="board-select">
-          <option value="">Select a display…</option>
+          <option value="">Select a display...</option>
         </select>
         <button class="btn" id="open-btn" disabled>Open Board</button>
       </div>
-      <div class="hint" id="url-hint">Select a board above or click a building below.</div>
+      <div class="hint" id="url-hint">Select a board above or click a display below.</div>
     </div>
 
-    <div class="campus-grid" id="campus-grid"></div>
+    <div id="facility-groups"></div>
   </div>
 
   <script>
-    // Define your boards here. "path" is relative to this index.html.
     const BOARDS = [
-      // Legacy display (for backward compatibility)
-      {
-        id: "waterfront-legacy",
-        label: "South Waterfront (Legacy)",
-        path: "waterfront/",
-        portraitPath: "waterfront/portrait.html",
-        notes: "Original waterfront display · live TriMet arrivals & OHSU Tram schedule.",
-        campus: "Legacy"
-      },
-
       // South Waterfront Campus
       {
         id: "rlsb",
         label: "Robertson Life Sciences Building",
         path: "south-waterfront/rlsb/",
         portraitPath: "south-waterfront/rlsb/portrait.html",
-        notes: "MAX Orange Line (City Center & Milwaukie) + Streetcar · 2730 S Moody Ave",
+        notes: "MAX Orange Line + Streetcar · 2730 S Moody Ave",
         campus: "South Waterfront"
       },
       {
@@ -316,7 +285,7 @@
         label: "Knight Cancer Research Building",
         path: "south-waterfront/kcrb/",
         portraitPath: "south-waterfront/kcrb/portrait.html",
-        notes: "MAX Orange Line (City Center & Milwaukie) + Streetcar · 2720 S Moody Ave",
+        notes: "MAX Orange Line + Streetcar · 2720 S Moody Ave",
         campus: "South Waterfront"
       },
       {
@@ -332,7 +301,7 @@
         label: "Rood Family Pavilion",
         path: "south-waterfront/rpv/",
         portraitPath: "south-waterfront/rpv/portrait.html",
-        notes: "Streetcar (accessibility priority enabled) · 3410 S Bond Ave",
+        notes: "Streetcar (accessibility priority) · 3410 S Bond Ave",
         campus: "South Waterfront"
       },
       {
@@ -358,7 +327,7 @@
         label: "Doernbecher Children's Hospital",
         path: "marquam-hill/doernbecher/",
         portraitPath: "marquam-hill/doernbecher/portrait.html",
-        notes: "⚠️ Construction Alert · Using alternate stop at SW Terwilliger · 700 SW Campus Dr",
+        notes: "Construction Alert · Using alternate stop at SW Terwilliger · 700 SW Campus Dr",
         campus: "Marquam Hill",
         alert: true
       },
@@ -367,7 +336,7 @@
         label: "Casey Eye Institute",
         path: "marquam-hill/casey-eye/",
         portraitPath: "marquam-hill/casey-eye/portrait.html",
-        notes: "⚠️ Construction Alert · Using alternate stop at SW Terwilliger · 515 SW Campus Dr",
+        notes: "Construction Alert · Using alternate stop at SW Terwilliger · 515 SW Campus Dr",
         campus: "Marquam Hill",
         alert: true
       },
@@ -388,121 +357,83 @@
         campus: "Marquam Hill"
       },
 
-      // Marquam Hill Portrait boards
+      // Legacy
       {
-        id: "hospital-portrait",
-        label: "OHSU Hospital (Portrait)",
-        path: "portrait/?board=marquam-hill/hospital",
-        notes: "Portrait display · Single-modality rotation",
-        campus: "Marquam Hill"
-      },
-      {
-        id: "doernbecher-portrait",
-        label: "Doernbecher Children's (Portrait)",
-        path: "portrait/?board=marquam-hill/doernbecher",
-        notes: "Portrait display · Single-modality rotation",
-        campus: "Marquam Hill",
-        alert: true
-      },
-      {
-        id: "casey-eye-portrait",
-        label: "Casey Eye Institute (Portrait)",
-        path: "portrait/?board=marquam-hill/casey-eye",
-        notes: "Portrait display · Single-modality rotation",
-        campus: "Marquam Hill",
-        alert: true
-      },
-      {
-        id: "kohler-portrait",
-        label: "Kohler Pavilion (Portrait)",
-        path: "portrait/?board=marquam-hill/kohler",
-        notes: "Portrait display · Single-modality rotation",
-        campus: "Marquam Hill"
-      },
-      {
-        id: "va-medical-portrait",
-        label: "VA Medical Center (Portrait)",
-        path: "portrait/?board=marquam-hill/va-medical",
-        notes: "Portrait display · Single-modality rotation",
-        campus: "Marquam Hill"
+        id: "waterfront-legacy",
+        label: "South Waterfront (Legacy)",
+        path: "waterfront/",
+        portraitPath: "waterfront/portrait.html",
+        notes: "Original waterfront display · live TriMet arrivals & OHSU Tram schedule.",
+        campus: "Legacy"
       }
     ];
 
     function initSelector() {
       const select = document.getElementById("board-select");
-      const campusGrid = document.getElementById("campus-grid");
+      const facilityGroups = document.getElementById("facility-groups");
       const btn = document.getElementById("open-btn");
       const urlHint = document.getElementById("url-hint");
 
-      // populate dropdown with both landscape and portrait options
+      // Populate dropdown
       for (const board of BOARDS) {
-        const optLandscape = document.createElement("option");
-        optLandscape.value = board.path;
-        optLandscape.textContent = `${board.label} (Landscape)`;
-        select.appendChild(optLandscape);
+        const optL = document.createElement("option");
+        optL.value = board.path;
+        optL.textContent = `${board.label} (Landscape)`;
+        select.appendChild(optL);
 
-        const optPortrait = document.createElement("option");
-        optPortrait.value = board.portraitPath;
-        optPortrait.textContent = `${board.label} (Portrait)`;
-        select.appendChild(optPortrait);
+        const optP = document.createElement("option");
+        optP.value = board.portraitPath;
+        optP.textContent = `${board.label} (Portrait)`;
+        select.appendChild(optP);
       }
 
       // Group boards by campus
       const campuses = {};
       for (const board of BOARDS) {
         const campus = board.campus || "Other";
-        if (!campuses[campus]) {
-          campuses[campus] = [];
-        }
+        if (!campuses[campus]) campuses[campus] = [];
         campuses[campus].push(board);
       }
 
-      // Render campus sections
-      const base = window.location.href.replace(/index\.html$/, "");
-      
-      // Define campus order
-      const campusOrder = ["South Waterfront", "Marquam Hill", "Legacy", "Other"];
-      
+      // Render facility groups with 2x2 grid
+      const campusOrder = ["South Waterfront", "Marquam Hill", "Legacy"];
+
       for (const campus of campusOrder) {
         if (!campuses[campus]) continue;
-        
-        const section = document.createElement("div");
-        section.className = "campus-section";
-        
-        const title = document.createElement("div");
-        title.className = "campus-title";
-        title.textContent = campus;
-        section.appendChild(title);
-        
-        for (const board of campuses[campus]) {
-          const link = document.createElement("a");
-          link.className = "building-link";
-          link.href = board.path;
-          // Allow normal navigation without localStorage persistence
-          // Users can use ?lock=true on board URLs for kiosk mode
-          
-          const name = document.createElement("div");
-          name.className = "building-name";
 
+        const group = document.createElement("div");
+        group.className = "facility-group";
+
+        const title = document.createElement("div");
+        title.className = "facility-title";
+        title.textContent = campus;
+        group.appendChild(title);
+
+        const grid = document.createElement("div");
+        grid.className = "display-grid";
+
+        for (const board of campuses[campus]) {
+          const card = document.createElement("div");
+          card.className = "display-card";
+
+          const name = document.createElement("div");
+          name.className = "display-name";
           if (board.alert) {
             const icon = document.createElement("span");
             icon.className = "alert-icon";
             icon.textContent = "⚠️";
             name.appendChild(icon);
           }
-
-          const nameText = document.createTextNode(board.label);
-          name.appendChild(nameText);
-          container.appendChild(name);
+          name.appendChild(document.createTextNode(board.label));
+          card.appendChild(name);
 
           if (board.notes) {
             const notes = document.createElement("div");
-            notes.className = "building-notes";
+            notes.className = "display-notes";
             notes.textContent = board.notes;
-            container.appendChild(notes);
+            card.appendChild(notes);
           }
 
-          // Add orientation buttons
           const buttons = document.createElement("div");
           buttons.className = "orientation-buttons";
 
@@ -510,52 +441,42 @@
           landscapeBtn.className = "orientation-btn";
           landscapeBtn.href = board.path;
           landscapeBtn.textContent = "Landscape";
-          landscapeBtn.addEventListener("click", (e) => {
-            e.preventDefault();
-            navigateToBoard(board.path);
-          });
 
           const portraitBtn = document.createElement("a");
           portraitBtn.className = "orientation-btn";
           portraitBtn.href = board.portraitPath;
           portraitBtn.textContent = "Portrait";
-          portraitBtn.addEventListener("click", (e) => {
-            e.preventDefault();
-            navigateToBoard(board.portraitPath);
-          });
 
           buttons.appendChild(landscapeBtn);
           buttons.appendChild(portraitBtn);
-          container.appendChild(buttons);
+          card.appendChild(buttons);
 
-          section.appendChild(container);
+          grid.appendChild(card);
         }
-        
-        campusGrid.appendChild(section);
+
+        group.appendChild(grid);
+        facilityGroups.appendChild(group);
       }
 
+      // Dropdown change handler
+      const base = window.location.href.replace(/index\.html$/, "");
       select.addEventListener("change", () => {
         const value = select.value;
         if (value) {
           btn.disabled = false;
-          const url = new URL(value, base).toString();
-          urlHint.textContent = `Selected board URL: ${url}`;
+          urlHint.textContent = `Selected: ${new URL(value, base).toString()}`;
         } else {
           btn.disabled = true;
-          urlHint.textContent = "Select a board above or click a building below.";
+          urlHint.textContent = "Select a board above or click a display below.";
         }
       });
 
       btn.addEventListener("click", () => {
-        const value = select.value;
-        if (!value) return;
-        window.location.href = value;
+        if (select.value) window.location.href = select.value;
       });
     }
 
-    window.addEventListener("load", () => {
-      initSelector();
-    });
+    window.addEventListener("load", initSelector);
   </script>
 </body>
 </html>
