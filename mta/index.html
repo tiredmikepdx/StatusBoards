@@ -217,6 +217,7 @@
     <div class="search-container">
         <input type="text" id="addressInput" placeholder="Enter address (e.g., 1234 SW Broadway, Portland, OR)">
         <button id="searchBtn">Find Transit</button>
+        <button id="locationBtn">📍 Use My Location</button>
     </div>
 
     <div class="clock" id="clock"></div>
@@ -288,6 +289,69 @@
                 console.error('Geocoding error:', error);
                 throw error;
             }
+        }
+
+        // Get device location using Geolocation API
+        async function getDeviceLocation() {
+            return new Promise((resolve, reject) => {
+                if (!navigator.geolocation) {
+                    reject(new Error('Geolocation is not supported by your browser'));
+                    return;
+                }
+
+                showStatus('Requesting location permission...');
+
+                navigator.geolocation.getCurrentPosition(
+                    async (position) => {
+                        const lat = position.coords.latitude;
+                        const lon = position.coords.longitude;
+
+                        // Reverse geocode to get a readable location name
+                        try {
+                            const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`;
+                            const response = await fetch(url, {
+                                headers: {
+                                    'User-Agent': 'StatusBoard Transit App'
+                                }
+                            });
+                            const data = await response.json();
+
+                            resolve({
+                                lat: lat,
+                                lon: lon,
+                                display_name: data.display_name || 'Current Location'
+                            });
+                        } catch (error) {
+                            // If reverse geocoding fails, still return the coordinates
+                            resolve({
+                                lat: lat,
+                                lon: lon,
+                                display_name: 'Current Location'
+                            });
+                        }
+                    },
+                    (error) => {
+                        let errorMessage = 'Unable to retrieve your location';
+                        switch(error.code) {
+                            case error.PERMISSION_DENIED:
+                                errorMessage = 'Location permission denied. Please enable location access in your browser settings.';
+                                break;
+                            case error.POSITION_UNAVAILABLE:
+                                errorMessage = 'Location information is unavailable.';
+                                break;
+                            case error.TIMEOUT:
+                                errorMessage = 'Location request timed out.';
+                                break;
+                        }
+                        reject(new Error(errorMessage));
+                    },
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 10000,
+                        maximumAge: 0
+                    }
+                );
+            });
         }
 
         // Find nearby TriMet stops
@@ -533,8 +597,57 @@
             }
         }
 
+        // Use device location to find nearby transit
+        async function useMyLocation() {
+            const locationBtn = document.getElementById('locationBtn');
+            locationBtn.disabled = true;
+            locationBtn.innerHTML = '<span class="loading-spinner"></span> Getting Location...';
+
+            try {
+                // Step 1: Get device location
+                const location = await getDeviceLocation();
+                currentLocation = location;
+
+                // Update address input to show we're using device location
+                document.getElementById('addressInput').value = '📍 ' + location.display_name;
+
+                // Step 2: Find nearby stops
+                showStatus('Finding nearby transit stops...');
+                const stops = await findNearbyStops(location.lat, location.lon);
+
+                if (stops.length === 0) {
+                    showStatus('No transit stops found within 500m of your location', true);
+                    renderBoard([], null);
+                    return;
+                }
+
+                // Step 3: Get arrivals
+                showStatus('Loading arrivals...');
+                const stopIds = stops.slice(0, 5).map(s => s.locid);
+                const arrivalsData = await getArrivals(stopIds);
+
+                // Step 4: Render board
+                renderBoard(stops, arrivalsData);
+                showStatus(`Found ${stops.length} nearby stop${stops.length !== 1 ? 's' : ''} near you`);
+
+                // Step 5: Start auto-refresh
+                if (refreshTimer) {
+                    clearInterval(refreshTimer);
+                }
+                refreshTimer = setInterval(() => refreshArrivals(stops), REFRESH_INTERVAL);
+
+            } catch (error) {
+                console.error('Location error:', error);
+                showStatus('Error: ' + error.message, true);
+            } finally {
+                locationBtn.disabled = false;
+                locationBtn.innerHTML = '📍 Use My Location';
+            }
+        }
+
         // Event listeners
         document.getElementById('searchBtn').addEventListener('click', searchAndDisplay);
+        document.getElementById('locationBtn').addEventListener('click', useMyLocation);
         document.getElementById('addressInput').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 searchAndDisplay();
