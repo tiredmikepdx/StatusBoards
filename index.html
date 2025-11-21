@@ -475,9 +475,12 @@
         section.appendChild(title);
         
         for (const board of campuses[campus]) {
-          const container = document.createElement("div");
-          container.className = "building-link";
-
+          const link = document.createElement("a");
+          link.className = "building-link";
+          link.href = board.path;
+          // Allow normal navigation without localStorage persistence
+          // Users can use ?lock=true on board URLs for kiosk mode
+          
           const name = document.createElement("div");
           name.className = "building-name";
 
@@ -546,12 +549,8 @@
       btn.addEventListener("click", () => {
         const value = select.value;
         if (!value) return;
-        navigateToBoard(value);
+        window.location.href = value;
       });
-    }
-
-    function navigateToBoard(path) {
-      window.location.href = path;
     }
 
     window.addEventListener("load", () => {
