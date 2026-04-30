@@ -2,8 +2,18 @@
   var params = new URLSearchParams(window.location.search);
   if (params.get('bypassMaintenance') === '1') return;
 
+  var blocked = function () {
+    return Promise.reject(new Error('DOWN FOR MAINTENANCE'));
+  };
+
+  window.fetch = blocked;
+  window.XMLHttpRequest = function () {
+    throw new Error('DOWN FOR MAINTENANCE');
+  };
+
   document.documentElement.setAttribute('lang', 'en');
-  document.title = 'Site temporarily unavailable';
+  document.documentElement.classList.add('maintenance-mode');
+  document.title = 'DOWN FOR MAINTENANCE';
 
   var style = document.createElement('style');
   style.textContent = `
@@ -18,6 +28,9 @@
       background: radial-gradient(circle at top, #1f2937, #020617 45%);
       color: #f9fafb;
       padding: 1.5rem;
+    }
+    .maintenance-mode body > :not(.maintenance-screen) {
+      display: none !important;
     }
     main {
       width: min(760px, 100%);
@@ -41,14 +54,23 @@
   `;
 
   var message = document.createElement('main');
+  message.className = 'maintenance-screen';
   message.innerHTML = `
-    <h1>Transit status displays are temporarily offline.</h1>
-    <p>The published status-board pages are currently unavailable while we perform maintenance.</p>
+    <h1>DOWN FOR MAINTENANCE</h1>
+    <p>The published status-board pages are currently unavailable while maintenance is in progress.</p>
     <p>Source code and configuration remain intact.</p>
   `;
 
-  document.head.innerHTML = '';
   document.head.appendChild(style);
-  document.body.innerHTML = '';
-  document.body.appendChild(message);
+
+  function renderMaintenance() {
+    document.body.innerHTML = '';
+    document.body.appendChild(message);
+  }
+
+  if (document.body) {
+    renderMaintenance();
+  } else {
+    document.addEventListener('DOMContentLoaded', renderMaintenance, { once: true });
+  }
 })();
